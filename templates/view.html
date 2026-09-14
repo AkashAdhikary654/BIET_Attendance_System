@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance History</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f4f9; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #007BFF; color: white; }
+        .top-nav { margin-bottom: 20px; }
+        .nav-link { text-decoration: none; color: #007BFF; font-weight: bold; }
+        .filter-form { text-align: center; margin-bottom: 20px; }
+        .filter-form input[type="date"] { padding: 8px; font-size: 16px; border-radius: 4px; border: 1px solid #ccc; }
+        .filter-form button { padding: 8px 15px; background: #007BFF; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; margin-left: 5px; }
+        .filter-form button:hover { background: #0056b3; }
+        .status-present { color: #28a745; font-weight: bold; }
+        .status-absent { color: #dc3545; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="top-nav">
+        <a href="/attendance" class="nav-link">← Back to Take Attendance</a>
+    </div>
+    
+    <h2>Attendance History</h2>
+
+    <!-- NEW JAVASCRIPT COPY BUTTON -->
+    {% if encoded_msg %}
+    <div style="text-align: center; margin-bottom: 25px;">
+        <button onclick="copyAndOpenWA()" style="background-color: #25D366; color: white; padding: 12px 24px; border: none; border-radius: 5px; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            📱 Copy Report & Open WhatsApp Group
+        </button>
+        
+        <script>
+            function copyAndOpenWA() {
+                var textToCopy = decodeURIComponent("{{ encoded_msg }}");
+                
+                // Copies formatted string to clipboard, then redirects
+                navigator.clipboard.writeText(textToCopy).then(function() {
+                    window.open("{{ group_link }}", "_blank");
+                }).catch(function(err) {
+                    alert("Please allow clipboard permissions, or copy manually.");
+                    window.open("{{ group_link }}", "_blank");
+                });
+            }
+        </script>
+    </div>
+    {% endif %}
+
+<div class="filter-form">
+        <form action="/view" method="GET">
+            <label for="filter_date"><strong>Date:</strong></label>
+            <input type="date" name="filter_date" id="filter_date" value="{{ filter_date or '' }}">
+            
+            <label for="filter_subject" style="margin-left: 10px;"><strong>Subject:</strong></label>
+            <select name="filter_subject" id="filter_subject" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                <option value="">-- All Subjects --</option>
+                <option value="Operating System" {% if filter_subject == 'Operating System' %}selected{% endif %}>Operating System</option>
+                <option value="Software Engineering" {% if filter_subject == 'Software Engineering' %}selected{% endif %}>Software Engineering</option>
+                <option value="OOP" {% if filter_subject == 'OOP' %}selected{% endif %}>OOP</option>
+                <option value="AI" {% if filter_subject == 'AI' %}selected{% endif %}>AI</option>
+                <option value="Compiler Design" {% if filter_subject == 'Compiler Design' %}selected{% endif %}>Compiler Design</option>
+                <option value="Industrial Management" {% if filter_subject == 'Industrial Management' %}selected{% endif %}>Industrial Management</option>
+                
+                <!-- NEW LAB SUBJECTS -->
+                <option value="Operating System Lab" {% if filter_subject == 'Operating System Lab' %}selected{% endif %}>Operating System Lab</option>
+                <option value="Object Oriented Lab" {% if filter_subject == 'Object Oriented Lab' %}selected{% endif %}>Object Oriented Lab</option>
+                <option value="Software Engineering Lab" {% if filter_subject == 'Software Engineering Lab' %}selected{% endif %}>Software Engineering Lab</option>
+            </select>
+
+            <!-- STATUS DROPDOWN (Defaults to Present) -->
+            <label for="filter_status" style="margin-left: 10px;"><strong>Status:</strong></label>
+            <select name="filter_status" id="filter_status" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                <option value="" {% if filter_status == '' %}selected{% endif %}>-- All --</option>
+                <option value="Present" {% if filter_status == 'Present' %}selected{% endif %}>Present</option>
+                <option value="Absent" {% if filter_status == 'Absent' %}selected{% endif %}>Absent</option>
+            </select>
+
+            <button type="submit" style="padding: 8px 15px; background: #007BFF; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">Filter</button>
+            <a href="/view" style="margin-left: 10px; text-decoration: none; color: #dc3545; font-weight: bold;">Clear Filters</a>
+        </form>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Roll No.</th>
+                <th>Name</th>
+                <th>Subject</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for att, student in records %}
+            <tr>
+                <td>{{ att.date.strftime('%Y-%m-%d') }}</td>
+                <td>{{ student.roll_number }}</td>
+                <td>{{ student.name }}</td>
+                <td>{{ att.subject }}</td>
+                <td class="{% if att.status == 'Present' %}status-present{% else %}status-absent{% endif %}">
+                    {{ att.status }}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="text-align: center; color: #666;">No attendance records found for this date.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

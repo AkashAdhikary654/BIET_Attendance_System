@@ -1,0 +1,10 @@
+SUBJECT_GROUPS = {
+    "Operating System": "https://chat.whatsapp.com/GlkuWa1NF5EAmaRiJXknxJ",
+    "Software Engineering": "https://chat.whatsapp.com/EiXy94poebVHMEm8mJ2eXS",
+    "OOP": "https://chat.whatsapp.com/BDbvoBvSpCF0A9NpdbdOpU",
+    "AI": "https://chat.whatsapp.com/GKla8rGTWuA7qsnhK9lTVh",
+    "Compiler Design": "https://chat.whatsapp.com/CJjap6DGwLs6Nf1a05ECA8",
+    "Industrial Management": "https://chat.whatsapp.com/PasteGorachandSirLinkHere"
+}
+Follow this link to join my WhatsApp group: https://chat.whatsapp.com/L5FAw8gqyUNGfJCxxef2zT?s=sh&p=a&mlu=0&ilr=4
+OS LAB:   https://chat.whatsapp.com/BDmV2RpP7mg8n5SrVqjxVZ?s=cl&p=a&mlu=4&ilr=4

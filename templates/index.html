@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Take Attendance</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f4f9; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; }
+        .date { text-align: center; color: #666; margin-bottom: 10px; }
+        .subject-select { text-align: center; margin-bottom: 20px; }
+        select { padding: 8px; font-size: 16px; border-radius: 4px; border: 1px solid #ccc; width: 80%; max-width: 300px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #007BFF; color: white; }
+        .submit-btn { display: block; width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
+        .submit-btn:hover { background: #218838; }
+        .top-nav { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center; }
+        .nav-link { text-decoration: none; color: #007BFF; font-weight: bold; }
+        .logout { color: #dc3545; }
+        .lab-btn { background: #ffc107; padding: 8px 12px; border-radius: 4px; color: black; margin-left: 15px; border: 1px solid #e0a800; }
+        .lab-btn:hover { background: #e0a800; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="top-nav">
+        <div>
+            <a href="/view" class="nav-link">View Past Attendance</a>
+            <a href="/add_student" class="nav-link" style="margin-left: 15px; color: #28a745;">+ Add Student</a>
+            <a href="/lab" class="nav-link lab-btn">📷 Lab Attendance</a>
+        </div>
+        <a href="/" class="nav-link logout">Change Class</a>
+    </div>
+    
+    <h2>{{ stream }} - {{ semester }} Attendance</h2>
+    <div class="date">Date: {{ date }}</div>
+
+    <form action="/submit" method="POST">
+        <div class="subject-select">
+            <select name="subject" required>
+                <option value="" disabled selected>-- Select Subject --</option>
+                {% set subjects_list = ["Operating System", "Software Engineering", "OOP", "AI", "Compiler Design", "Industrial Management"] %}
+                
+                {% for sub in subjects_list %}
+                    <option value="{{ sub }}" {% if sub in submitted_subjects %}disabled style="color: #999; background: #eee;"{% endif %}>
+                        {{ sub }} {% if sub in submitted_subjects %} (Submitted) {% endif %}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Class Roll</th>
+                    <th>Univ. Roll No.</th>
+                    <th>Name</th>
+                    <th>Present</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if students %}
+                    {% for student in students %}
+                    <tr>
+                        <td>{{ student.class_roll }}</td>
+                        <td>{{ student.roll_number }}</td>
+                        <td>{{ student.name }}</td>
+                        <td>
+                            <input type="checkbox" name="status_{{ student.id }}" value="Present" style="transform: scale(1.5); cursor: pointer;">
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: #dc3545; font-weight: bold; padding: 20px;">
+                            No students registered for {{ stream }} - {{ semester }}.
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+        
+        {% if students %}
+        <button type="submit" class="submit-btn">Submit Attendance</button>
+        {% endif %}
+    </form>
+</div>
+
+</body>
+</html>
