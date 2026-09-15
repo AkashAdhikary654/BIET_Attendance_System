@@ -352,4 +352,8 @@ with app.app_context():
         db.session.commit()
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Read port dynamically from environment, default to 5000 if not found
+    port = int(os.environ.get("PORT", 5000))
+    # Host must be 0.0.0.0 for external cloud access
+    app.run(host='0.0.0.0', port=port, debug=False)
+    #app.run(debug=True)
