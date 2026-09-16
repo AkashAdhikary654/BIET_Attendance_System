@@ -7,3 +7,7 @@ __pycache__
 venv
 env
 *.db
+*.sqlite3
+.vs
+.vscode
+config/

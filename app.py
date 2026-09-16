@@ -58,6 +58,10 @@ class Attendance(db.Model):
 #     return cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
 # --- APP ROUTES ---
+@app.route('/health')
+def health():
+    return {"status": "ok", "message": "Service is healthy"}, 200
+
 @app.route('/', methods=['GET', 'POST'])
 def home():
     if request.method == 'POST':
