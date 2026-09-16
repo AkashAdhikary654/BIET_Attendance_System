@@ -17,7 +17,11 @@
         
         .btn { width: 100%; padding: 16px; font-size: 16px; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; transition: transform 0.1s, box-shadow 0.1s; box-sizing: border-box; }
         .btn:active { transform: scale(0.98); }
-        .btn-register { background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2); box-shadow: 0 4px 10px rgba(253, 160, 133, 0.3); }
+        
+        /* Disabled styles for Lite Mode */
+        .btn-register { background: #e9ecef; color: #6c757d; cursor: not-allowed; }
+        .card-disabled { opacity: 0.7; }
+        
         .btn-submit { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2); box-shadow: 0 4px 10px rgba(56, 239, 125, 0.3); }
         .btn-whatsapp { background: #25D366; color: white; margin-top: 10px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); }
         
@@ -31,44 +35,44 @@
         th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; white-space: nowrap; }
         th { background-color: #f8f9fa; color: #495057; font-weight: 600; }
         .status-badge { background: #d4edda; color: #155724; padding: 4px 8px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; z-index: 1000; }
-        .modal-content { background: white; padding: 20px; border-radius: 20px; text-align: center; width: 90%; max-width: 400px; box-sizing: border-box; }
-        .modal-content h3 { margin-top: 0; color: #333; }
-        video { width: 100%; border-radius: 12px; background: #000; margin-bottom: 15px; border: 3px solid #eee; }
-        .btn-capture { background: #007BFF; color: white; padding: 15px; font-size: 18px; border-radius: 10px; width: 100%; border: none; font-weight: bold; margin-bottom: 10px; }
-        .btn-cancel { background: #f8f9fa; color: #333; border: 1px solid #ddd; padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div class="header">
         <a href="/attendance" class="btn-back">← Back to Theory</a>
-        <h2>Biometric Lab Portal</h2>
+        <h2>Lab Portal (Lite Mode)</h2>
     </div>
 
-    <!-- REGISTRATION CARD -->
-    <div class="card">
+    <!-- REGISTRATION CARD (DISABLED FOR RAM OPTIMIZATION) -->
+    <div class="card card-disabled">
         <h3 class="card-title">👤 Face Registration</h3>
-        <select id="student_id">
+        <select disabled>
+            <option>Disabled to save server RAM</option>
+        </select>
+        <button onclick="alert('Face Registration is disabled in Lite Mode. Proceed directly to Manual Lab Attendance below.')" class="btn btn-register">🚫 Camera Disabled</button>
+    </div>
+
+    <!-- ATTENDANCE CARD (UPDATED FOR MANUAL ENTRY) -->
+    <div class="card">
+        <h3 class="card-title">✅ Submit Lab Attendance</h3>
+        
+        <!-- Added Student Dropdown for Lite Mode -->
+        <select id="attendance_student_id">
             <option value="" disabled selected>Tap to select your name...</option>
             {% for student in students %}
                 <option value="{{ student.id }}">{{ student.class_roll }} - {{ student.name }}</option>
             {% endfor %}
         </select>
-        <button onclick="openCamera('register')" class="btn btn-register">📸 Setup My Face Profile</button>
-    </div>
 
-    <!-- ATTENDANCE CARD -->
-    <div class="card">
-        <h3 class="card-title">✅ Submit Attendance</h3>
         <select id="subject">
             <option value="" disabled selected>Tap to select lab session...</option>
             <option value="Operating System Lab">Operating System Lab</option>
             <option value="OOP Lab">OOP Lab</option>
             <option value="Software Engineering Lab">Software Engineering Lab</option>
         </select>
-        <button onclick="openCamera('attendance')" class="btn btn-submit">🤳 Scan Face & Verify</button>
+        
+        <button onclick="submitLiteAttendance()" class="btn btn-submit">✅ Mark Present</button>
     </div>
 
     <!-- HISTORY CARD -->
@@ -91,7 +95,6 @@
             </div>
         </form>
 
-        <!-- NEW WHATSAPP BUTTON -->
         <button onclick="sendWhatsAppReport()" class="btn btn-whatsapp">💬 Send WhatsApp Report</button>
 
         <div class="table-wrapper">
@@ -122,95 +125,41 @@
         </div>
     </div>
 
-    <!-- CAMERA OVERLAY MODAL -->
-    <div id="cameraModal" class="modal">
-        <div class="modal-content">
-            <h3 id="modalTitle">Scan Face</h3>
-            <video id="video" autoplay playsinline></video>
-            <canvas id="canvas" style="display:none;"></canvas>
-            <button id="captureBtn" class="btn-capture">📸 Capture</button>
-            <button onclick="closeCamera()" class="btn-cancel">Cancel</button>
-        </div>
-    </div>
-
 <script>
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    
-    let currentStream = null;
-    let currentAction = ""; 
+    // LITE MODE: Bypass Camera and Submit Directly
+    function submitLiteAttendance() {
+        const studentId = document.getElementById('attendance_student_id').value;
+        const subject = document.getElementById('subject').value;
 
-    function openCamera(action) {
-        if (action === 'register' && !document.getElementById('student_id').value) {
-            return alert("Please select your name first.");
+        if (!studentId) {
+            return alert("Please select your name from the dropdown.");
         }
-        if (action === 'attendance' && !document.getElementById('subject').value) {
-            return alert("Please select a lab subject first.");
+        if (!subject) {
+            return alert("Please select a lab subject.");
         }
 
-        currentAction = action;
-        document.getElementById('modalTitle').innerText = action === 'register' ? "Look directly at the camera" : "Verifying Identity";
-        document.getElementById('cameraModal').style.display = 'flex';
+        const btn = document.querySelector('.btn-submit');
+        btn.innerText = "⏳ Submitting...";
+        btn.disabled = true;
 
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
-            .then(stream => {
-                currentStream = stream;
-                video.srcObject = stream;
-            })
-            .catch(err => {
-                alert("Camera access denied! Please allow camera permissions in your browser.");
-                closeCamera();
-            });
+        fetch('/lab_attendance', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `student_id=${studentId}&subject=${encodeURIComponent(subject)}`
+        })
+        .then(res => res.text())
+        .then(data => {
+            alert(data);
+            window.location.reload(); 
+        })
+        .catch(err => {
+            alert("Network error. Please try again.");
+            btn.innerText = "✅ Mark Present";
+            btn.disabled = false;
+        });
     }
 
-    function closeCamera() {
-        document.getElementById('cameraModal').style.display = 'none';
-        if (currentStream) {
-            currentStream.getTracks().forEach(track => track.stop());
-            currentStream = null;
-        }
-        document.getElementById('captureBtn').innerText = "📸 Capture";
-        document.getElementById('captureBtn').disabled = false;
-    }
-
-    document.getElementById('captureBtn').addEventListener('click', () => {
-        document.getElementById('captureBtn').innerText = "⏳ Processing...";
-        document.getElementById('captureBtn').disabled = true;
-        
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const base64Image = canvas.toDataURL('image/jpeg');
-
-        closeCamera();
-
-        if (currentAction === 'register') {
-            const studentId = document.getElementById('student_id').value;
-            fetch('/register_face', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `student_id=${studentId}&image_data=${encodeURIComponent(base64Image)}`
-            }).then(res => res.text()).then(data => {
-                alert(data);
-                window.location.reload(); 
-            });
-        } 
-        else if (currentAction === 'attendance') {
-            const subject = document.getElementById('subject').value;
-            fetch('/lab_attendance', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `subject=${encodeURIComponent(subject)}&image_data=${encodeURIComponent(base64Image)}`
-            }).then(res => res.text()).then(data => {
-                alert(data);
-                window.location.reload(); 
-            });
-        }
-    });
-
-    // NEW WHATSAPP FUNCTION
-    // NEW MOBILE-OPTIMIZED WHATSAPP FUNCTION
+    // MOBILE-OPTIMIZED WHATSAPP FUNCTION
     async function sendWhatsAppReport() {
         const date = document.getElementById('filter_date').value;
         const subject = document.getElementById('filter_subject').value;
@@ -224,7 +173,6 @@
         btn.innerText = "⏳ Generating...";
         
         try {
-            // Fetch the specific lab report from Flask
             const response = await fetch(`/send_lab_report?date=${date}&subject=${encodeURIComponent(subject)}`);
             const data = await response.json();
             
@@ -234,7 +182,6 @@
                 return;
             }
             
-            // Mobile-friendly clipboard copy
             const textArea = document.createElement("textarea");
             textArea.value = data.message;
             document.body.appendChild(textArea);
@@ -243,10 +190,8 @@
             try {
                 document.execCommand('copy');
                 alert(`✅ Report copied to clipboard!\n\nClick OK to open the ${subject} WhatsApp group, then just PASTE the message.`);
-                // Direct the user strictly to the specific group link
                 window.location.href = data.group_link; 
             } catch (err) {
-                // If the phone's browser blocks copying, fall back to the generic WhatsApp API
                 window.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(data.message)}`;
             }
             

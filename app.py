@@ -2,9 +2,9 @@ import os
 import urllib.parse
 import json
 import base64
-#import cv2
-import numpy as np
-#import face_recognition
+# import cv2
+#import numpy as np
+# import face_recognition
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import date, datetime
@@ -45,12 +45,13 @@ class Attendance(db.Model):
     subject = db.Column(db.String(100), nullable=False)
     status = db.Column(db.String(10), nullable=False)
 
-def decode_base64_image(base64_string):
-    if ',' in base64_string:
-        base64_string = base64_string.split(',')[1]
-    img_data = base64.b64decode(base64_string)
-    nparr = np.frombuffer(img_data, np.uint8)
-    return cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+# --- COMMENTED OUT FOR RAM OPTIMIZATION ---
+# def decode_base64_image(base64_string):
+#     if ',' in base64_string:
+#         base64_string = base64_string.split(',')[1]
+#     img_data = base64.b64decode(base64_string)
+#     nparr = np.frombuffer(img_data, np.uint8)
+#     return cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
 # --- APP ROUTES ---
 @app.route('/', methods=['GET', 'POST'])
@@ -181,19 +182,16 @@ def add_student():
 def lab_dashboard():
     students = Student.query.order_by(Student.class_roll).all()
     
-    # Capture filter requests
     filter_date_str = request.args.get('filter_date')
     filter_subject = request.args.get('filter_subject')
     
     lab_subjects = ["Operating System Lab", "OOP Lab", "Software Engineering Lab"]
     
-    # Base query: Only Lab subjects AND strictly Present students
     query = db.session.query(Attendance, Student).join(Student).filter(
         Attendance.subject.in_(lab_subjects),
         Attendance.status == "Present"
     )
     
-    # Apply date filter if selected
     if filter_date_str:
         try:
             filter_date_obj = datetime.strptime(filter_date_str, '%Y-%m-%d').date()
@@ -201,7 +199,6 @@ def lab_dashboard():
         except ValueError:
             pass
             
-    # Apply subject filter if selected
     if filter_subject:
         query = query.filter(Attendance.subject == filter_subject)
             
@@ -212,25 +209,23 @@ def lab_dashboard():
                            records=records,
                            filter_date=filter_date_str,
                            filter_subject=filter_subject)
+
 @app.route('/register_face', methods=['POST'])
 def register_face():
-    student_id = request.form.get('student_id')
-    image_data = request.form.get('image_data')
+    # --- COMMENTED OUT FOR RAM OPTIMIZATION ---
+    # student_id = request.form.get('student_id')
+    # image_data = request.form.get('image_data')
+    # img = decode_base64_image(image_data)
+    # rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    # encodings = face_recognition.face_encodings(rgb_img)
+    # if not encodings:
+    #     return "No face detected. Please try again."
+    # face_encoding_json = json.dumps(encodings[0].tolist())
+    # student = Student.query.get(student_id)
+    # student.face_encoding = face_encoding_json
+    # db.session.commit()
     
-    img = decode_base64_image(image_data)
-    rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    
-    encodings = face_recognition.face_encodings(rgb_img)
-    if not encodings:
-        return "No face detected. Please try again."
-        
-    face_encoding_json = json.dumps(encodings[0].tolist())
-    
-    student = Student.query.get(student_id)
-    student.face_encoding = face_encoding_json
-    db.session.commit()
-    
-    return "Face registered successfully!"
+    return "Face registration is disabled in Lite Mode."
 
 @app.route('/send_lab_report')
 def send_lab_report():
@@ -245,7 +240,6 @@ def send_lab_report():
     except ValueError:
         filter_date_obj = date.today()
         
-    # Strictly fetch only the selected subject
     records = db.session.query(Attendance, Student).join(Student).filter(
         Attendance.subject == subject,
         Attendance.date == filter_date_obj,
@@ -260,52 +254,54 @@ def send_lab_report():
         for i, (att, student) in enumerate(records, 1):
             msg_text += f"{i}) {student.class_roll}--> {student.name}\n"
             
-    # Get the specific link for the selected lab group
     group_link = SUBJECT_GROUPS.get(subject, "https://web.whatsapp.com")
     
     return {"message": msg_text, "group_link": group_link}
+
 @app.route('/lab_attendance', methods=['POST'])
 def lab_attendance():
     subject = request.form.get('subject')
-    image_data = request.form.get('image_data')
     
-    img = decode_base64_image(image_data)
-    rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    # NEW LITE MODE: Accept student_id directly instead of image data
+    student_id = request.form.get('student_id')
     
-    unknown_encodings = face_recognition.face_encodings(rgb_img)
-    if not unknown_encodings:
-        return "No face detected. Please ensure you are in a well-lit area."
-        
-    unknown_encoding = unknown_encodings[0]
+    # --- COMMENTED OUT FOR RAM OPTIMIZATION ---
+    # image_data = request.form.get('image_data')
+    # img = decode_base64_image(image_data)
+    # rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    # unknown_encodings = face_recognition.face_encodings(rgb_img)
+    # if not unknown_encodings:
+    #     return "No face detected. Please ensure you are in a well-lit area."
+    # unknown_encoding = unknown_encodings[0]
+    # students = Student.query.filter(Student.face_encoding.isnot(None)).all()
+    # if not students:
+    #     return "No students are registered with facial recognition."
+    # known_encodings = [np.array(json.loads(s.face_encoding)) for s in students]
+    # face_distances = face_recognition.face_distance(known_encodings, unknown_encoding)
+    # best_match_index = np.argmin(face_distances)
     
-    students = Student.query.filter(Student.face_encoding.isnot(None)).all()
-    if not students:
-        return "No students are registered with facial recognition."
-        
-    known_encodings = [np.array(json.loads(s.face_encoding)) for s in students]
+    if not student_id:
+         return "❌ Lite Mode Active: Please ensure you select your name from the dropdown to submit attendance."
+         
+    matched_student = Student.query.get(student_id)
     
-    face_distances = face_recognition.face_distance(known_encodings, unknown_encoding)
-    best_match_index = np.argmin(face_distances)
+    if not matched_student:
+         return "Student not found."
     
-    if face_distances[best_match_index] < 0.45:
-        matched_student = students[best_match_index]
-        
-        existing_record = Attendance.query.filter_by(
-            date=date.today(), 
-            subject=subject, 
-            student_id=matched_student.id
-        ).first()
-        
-        if existing_record:
-            return f"Attendance already marked for {matched_student.name} today."
-        
-        new_record = Attendance(student_id=matched_student.id, subject=subject, status="Present")
-        db.session.add(new_record)
-        db.session.commit()
-        
-        return f"✅ Attendance successfully marked for {matched_student.class_roll} - {matched_student.name}!"
-    else:
-        return "❌ Face not recognized. Please register your face or try again."
+    existing_record = Attendance.query.filter_by(
+        date=date.today(), 
+        subject=subject, 
+        student_id=matched_student.id
+    ).first()
+    
+    if existing_record:
+        return f"Attendance already marked for {matched_student.name} today."
+    
+    new_record = Attendance(student_id=matched_student.id, subject=subject, status="Present")
+    db.session.add(new_record)
+    db.session.commit()
+    
+    return f"✅ Attendance marked manually for {matched_student.class_roll} - {matched_student.name}!"
 
 # --- AUTOMATIC INITIALIZATION ---
 with app.app_context():
@@ -354,4 +350,3 @@ with app.app_context():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 3000))
     app.run(host='0.0.0.0', port=port, debug=False)
-    #app.run(debug=True)
