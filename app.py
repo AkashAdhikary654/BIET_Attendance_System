@@ -2,9 +2,9 @@ import os
 import urllib.parse
 import json
 import base64
-import cv2
+#import cv2
 import numpy as np
-import face_recognition
+#import face_recognition
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import date, datetime
