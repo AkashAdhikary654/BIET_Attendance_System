@@ -14,8 +14,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application files
 COPY . .
 
-# Expose the default application port
-EXPOSE 3000
+# Expose all candidate ports so ECS / ALB port mapping matches any configured port
+EXPOSE 3000 5000 8080 80
 
-# Run with Gunicorn production server binding to dynamic $PORT or 3000
-CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-3000} --workers 2 --threads 2 --timeout 120 app:app"]
+# Launch through entrypoint.py to bind to all candidate ports simultaneously
+CMD ["python", "entrypoint.py"]

@@ -9,7 +9,11 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import date, datetime
 
+from werkzeug.middleware.proxy_fix import ProxyFix
+
 app = Flask(__name__)
+# Support reverse proxy headers from Cloudflare & AWS ALB so redirects and cookies preserve HTTPS
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 app.secret_key = 'super_secret_key_change_this_later' 
 
 # --- NEW CLOUD SESSION FIX ---
@@ -19,6 +23,9 @@ app.config['SESSION_COOKIE_NAME'] = 'attendance_session'
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'attendance.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'connect_args': {'check_same_thread': False, 'timeout': 30}
+}
 db = SQLAlchemy(app)
 
 # --- WHATSAPP GROUP LINKS ---
@@ -313,47 +320,50 @@ def lab_attendance():
 
 # --- AUTOMATIC INITIALIZATION ---
 with app.app_context():
-    db.create_all()
-    
-    if not Student.query.first():
-        real_students = [
-            Student(class_roll="CSE-20/24", name="ARIJIT SARKAR", roll_number="11800124002"),
-            Student(class_roll="CSE-22/24", name="SK ISAM HAQUE", roll_number="11800124004"),
-            Student(class_roll="N/A", name="MD. SAMIRUZZAMAN", roll_number="11800124005"),
-            Student(class_roll="CSE- 35/24", name="INDRAJIT MONDAL", roll_number="11800124006"),
-            Student(class_roll="CSE- 12/24", name="ROHAN KARMAKAR", roll_number="11800124007"),
-            Student(class_roll="CSE- 04/24", name="ARKADIP CHAKRABORTY", roll_number="11800124008"),
-            Student(class_roll="CSE- 21/24", name="MOUSUMI DEY", roll_number="11800124010"),
-            Student(class_roll="CSE- 23/24", name="MD NAFIS", roll_number="11800124011"),
-            Student(class_roll="CSE- 24/24", name="BAPPA KABIRAJ", roll_number="11800124012"),
-            Student(class_roll="CSE- 25/24", name="JOY KUMAR BHALLA", roll_number="11800124013"),
-            Student(class_roll="CSE- 29/24", name="KRISHNENDU DAS", roll_number="11800124014"),
-            Student(class_roll="CSE- 33/24", name="SUPRATIM GHOSH", roll_number="11800124016"),
-            Student(class_roll="CSE- 05/24", name="RIYODEB DHIBAR", roll_number="11800124019"),
-            Student(class_roll="CSE- 03/24", name="SHWETARKA BANERJEE", roll_number="11800124021"),
-            Student(class_roll="CSE-10/24", name="UMER NAWAZ", roll_number="11800124022"),
-            Student(class_roll="CSE- 11/24", name="SAMBIT BHAKAT", roll_number="11800124023"),
-            Student(class_roll="N/A", name="ARBIND SINGH", roll_number="11800124024"),
-            Student(class_roll="CSE- 15/24", name="SK TARIK AZIZ", roll_number="11800124025"),
-            Student(class_roll="CSE- 28/24", name="DEBANJAN DAS", roll_number="11800124026"),
-            Student(class_roll="CSE-31/24", name="ISHITA GANAI", roll_number="11800124027"),
-            Student(class_roll="CSE- 32/24", name="NISHAR ALI", roll_number="11800124028"),
-            Student(class_roll="CSE-D 7/25", name="BISWADEEP BASAK", roll_number="11800125029"),
-            Student(class_roll="CSE-D 16/25", name="SAKILUR HAQUE", roll_number="11800125032"),
-            Student(class_roll="CSE-D 10/25", name="AYUSH CHAKRABORTY", roll_number="11800125033"),
-            Student(class_roll="CSE-D 11/25", name="GOLAP HOSSAIN", roll_number="11800125034"),
-            Student(class_roll="CSE-D 12/25", name="ANUP RAJAK", roll_number="11800125035"),
-            Student(class_roll="CSE-D 14/25", name="SANJAN SAHA", roll_number="11800125036"),
-            Student(class_roll="CSE- D 15/25", name="ALOKE DAS", roll_number="11800125037"),
-            Student(class_roll="CSE-D 01/25", name="ADNAN HOSSAIN", roll_number="11800125038"),
-            Student(class_roll="CSE- D 02/25", name="DEBOLINA GHOSH", roll_number="11800125039"),
-            Student(class_roll="CSE-D 03/25", name="BIKASH CHOWDHURY", roll_number="11800125040"),
-            Student(class_roll="CSE-D 05/25", name="FIROJ ANSARI", roll_number="11800125042"),
-            Student(class_roll="CSE-D 08/25", name="SAYAN KOLEY", roll_number="11800125043"),
-            Student(class_roll="CSE-D 09/25", name="AKASH ADHIKARY", roll_number="11800125044")
-        ]
-        db.session.bulk_save_objects(real_students)
-        db.session.commit()
+    try:
+        db.create_all()
+        if not Student.query.first():
+            real_students = [
+                Student(class_roll="CSE-20/24", name="ARIJIT SARKAR", roll_number="11800124002"),
+                Student(class_roll="CSE-22/24", name="SK ISAM HAQUE", roll_number="11800124004"),
+                Student(class_roll="N/A", name="MD. SAMIRUZZAMAN", roll_number="11800124005"),
+                Student(class_roll="CSE- 35/24", name="INDRAJIT MONDAL", roll_number="11800124006"),
+                Student(class_roll="CSE- 12/24", name="ROHAN KARMAKAR", roll_number="11800124007"),
+                Student(class_roll="CSE- 04/24", name="ARKADIP CHAKRABORTY", roll_number="11800124008"),
+                Student(class_roll="CSE- 21/24", name="MOUSUMI DEY", roll_number="11800124010"),
+                Student(class_roll="CSE- 23/24", name="MD NAFIS", roll_number="11800124011"),
+                Student(class_roll="CSE- 24/24", name="BAPPA KABIRAJ", roll_number="11800124012"),
+                Student(class_roll="CSE- 25/24", name="JOY KUMAR BHALLA", roll_number="11800124013"),
+                Student(class_roll="CSE- 29/24", name="KRISHNENDU DAS", roll_number="11800124014"),
+                Student(class_roll="CSE- 33/24", name="SUPRATIM GHOSH", roll_number="11800124016"),
+                Student(class_roll="CSE- 05/24", name="RIYODEB DHIBAR", roll_number="11800124019"),
+                Student(class_roll="CSE- 03/24", name="SHWETARKA BANERJEE", roll_number="11800124021"),
+                Student(class_roll="CSE-10/24", name="UMER NAWAZ", roll_number="11800124022"),
+                Student(class_roll="CSE- 11/24", name="SAMBIT BHAKAT", roll_number="11800124023"),
+                Student(class_roll="N/A", name="ARBIND SINGH", roll_number="11800124024"),
+                Student(class_roll="CSE- 15/24", name="SK TARIK AZIZ", roll_number="11800124025"),
+                Student(class_roll="CSE- 28/24", name="DEBANJAN DAS", roll_number="11800124026"),
+                Student(class_roll="CSE-31/24", name="ISHITA GANAI", roll_number="11800124027"),
+                Student(class_roll="CSE- 32/24", name="NISHAR ALI", roll_number="11800124028"),
+                Student(class_roll="CSE-D 7/25", name="BISWADEEP BASAK", roll_number="11800125029"),
+                Student(class_roll="CSE-D 16/25", name="SAKILUR HAQUE", roll_number="11800125032"),
+                Student(class_roll="CSE-D 10/25", name="AYUSH CHAKRABORTY", roll_number="11800125033"),
+                Student(class_roll="CSE-D 11/25", name="GOLAP HOSSAIN", roll_number="11800125034"),
+                Student(class_roll="CSE-D 12/25", name="ANUP RAJAK", roll_number="11800125035"),
+                Student(class_roll="CSE-D 14/25", name="SANJAN SAHA", roll_number="11800125036"),
+                Student(class_roll="CSE- D 15/25", name="ALOKE DAS", roll_number="11800125037"),
+                Student(class_roll="CSE-D 01/25", name="ADNAN HOSSAIN", roll_number="11800125038"),
+                Student(class_roll="CSE- D 02/25", name="DEBOLINA GHOSH", roll_number="11800125039"),
+                Student(class_roll="CSE-D 03/25", name="BIKASH CHOWDHURY", roll_number="11800125040"),
+                Student(class_roll="CSE-D 05/25", name="FIROJ ANSARI", roll_number="11800125042"),
+                Student(class_roll="CSE-D 08/25", name="SAYAN KOLEY", roll_number="11800125043"),
+                Student(class_roll="CSE-D 09/25", name="AKASH ADHIKARY", roll_number="11800125044")
+            ]
+            db.session.bulk_save_objects(real_students)
+            db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        print(f"[DB INIT] Setup note: {e}", flush=True)
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 3000))
