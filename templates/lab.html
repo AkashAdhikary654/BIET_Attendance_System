@@ -2,85 +2,385 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lab Face Attendance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#1e293b">
+    <title>Lab Attendance Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 15px; color: #333; }
-        .header { text-align: center; margin-bottom: 20px; margin-top: 10px; }
-        .header h2 { margin: 0; color: #1a1a1a; font-size: 22px; }
-        .btn-back { color: #6c757d; text-decoration: none; font-size: 14px; font-weight: bold; display: inline-block; margin-bottom: 10px; }
-        
-        .card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .card-title { font-size: 18px; margin-top: 0; margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #f0f2f5; padding-bottom: 10px; }
-        
-        select, input[type="date"] { width: 100%; padding: 14px; font-size: 16px; border: 1px solid #ddd; border-radius: 10px; margin-bottom: 15px; background-color: #f9fbfc; box-sizing: border-box; appearance: none; }
-        
-        .btn { width: 100%; padding: 16px; font-size: 16px; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; transition: transform 0.1s, box-shadow 0.1s; box-sizing: border-box; }
-        .btn:active { transform: scale(0.98); }
-        
-        /* Disabled styles for Lite Mode */
-        .btn-register { background: #e9ecef; color: #6c757d; cursor: not-allowed; }
-        .card-disabled { opacity: 0.7; }
-        
-        .btn-submit { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2); box-shadow: 0 4px 10px rgba(56, 239, 125, 0.3); }
-        .btn-whatsapp { background: #25D366; color: white; margin-top: 10px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); }
-        
-        .filter-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
-        .filter-actions { display: flex; gap: 10px; }
-        .btn-filter { flex: 2; background: #007BFF; color: white; padding: 12px; border-radius: 10px; font-weight: bold; border: none; }
-        .btn-clear { flex: 1; background: #e9ecef; color: #dc3545; text-align: center; padding: 12px; border-radius: 10px; font-weight: bold; text-decoration: none; }
-        
-        .table-wrapper { overflow-x: auto; border-radius: 10px; border: 1px solid #eee; margin-top: 15px; }
-        table { width: 100%; min-width: 400px; border-collapse: collapse; }
-        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; white-space: nowrap; }
-        th { background-color: #f8f9fa; color: #495057; font-weight: 600; }
-        .status-badge { background: #d4edda; color: #155724; padding: 4px 8px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --whatsapp: #25D366;
+            --success: #10b981;
+            --success-bg: #ecfdf5;
+            --surface: #ffffff;
+            --bg: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        .app-header {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: 700;
+            padding: 6px 10px;
+            border-radius: var(--radius-sm);
+            background: var(--primary-light);
+        }
+
+        .header-title {
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .header-spacer {
+            width: 70px;
+        }
+
+        .container {
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 18px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+            margin-bottom: 18px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 10px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge-lite {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            background: #f1f5f9;
+            color: #475569;
+            border-radius: 999px;
+            text-transform: uppercase;
+        }
+
+        .form-item {
+            margin-bottom: 14px;
+        }
+
+        .form-item label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: #475569;
+            margin-bottom: 6px;
+        }
+
+        .custom-select {
+            width: 100%;
+            height: 48px;
+            padding: 0 38px 0 14px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            color: var(--text-main);
+            background-color: #f8fafc;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+        }
+
+        .custom-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: #ffffff;
+        }
+
+        .btn-submit-lab {
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+            transition: all 0.15s;
+        }
+
+        .btn-submit-lab:active {
+            transform: scale(0.98);
+        }
+
+        /* Filter Section */
+        .filter-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .filter-row input[type="date"],
+        .filter-row select {
+            flex: 1;
+            height: 44px;
+            padding: 0 10px;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: inherit;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background-color: #f8fafc;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .btn-filter {
+            flex: 2;
+            height: 42px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .btn-reset {
+            flex: 1;
+            height: 42px;
+            background: #f1f5f9;
+            color: #475569;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .btn-wa-report {
+            width: 100%;
+            height: 48px;
+            background: var(--whatsapp);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.25);
+            margin-bottom: 16px;
+        }
+
+        .btn-wa-report:active {
+            transform: scale(0.98);
+        }
+
+        /* Log Records */
+        .log-stream {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .log-item {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .log-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .log-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .log-meta {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .log-roll {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #1e293b;
+        }
+
+        .status-pill {
+            background: var(--success-bg);
+            color: var(--success);
+            border: 1px solid #a7f3d0;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 999px;
+            flex-shrink: 0;
+        }
+
+        .empty-log {
+            text-align: center;
+            padding: 24px 16px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <a href="/attendance" class="btn-back">← Back to Theory</a>
-        <h2>Lab Portal (Lite Mode)</h2>
-    </div>
+<header class="app-header">
+    <a href="/attendance" class="header-back">
+        <span>←</span>
+        <span>Theory</span>
+    </a>
+    <div class="header-title">Lab Attendance</div>
+    <div class="header-spacer"></div>
+</header>
 
-    <!-- REGISTRATION CARD (DISABLED FOR RAM OPTIMIZATION) -->
-    <div class="card card-disabled">
-        <h3 class="card-title">👤 Face Registration</h3>
-        <select disabled>
-            <option>Disabled to save server RAM</option>
-        </select>
-        <button onclick="alert('Face Registration is disabled in Lite Mode. Proceed directly to Manual Lab Attendance below.')" class="btn btn-register">🚫 Camera Disabled</button>
-    </div>
+<div class="container">
 
-    <!-- ATTENDANCE CARD (UPDATED FOR MANUAL ENTRY) -->
+    <!-- Submit Lab Attendance Card -->
     <div class="card">
-        <h3 class="card-title">✅ Submit Lab Attendance</h3>
-        
-        <!-- Added Student Dropdown for Lite Mode -->
-        <select id="attendance_student_id">
-            <option value="" disabled selected>Tap to select your name...</option>
-            {% for student in students %}
-                <option value="{{ student.id }}">{{ student.class_roll }} - {{ student.name }}</option>
-            {% endfor %}
-        </select>
+        <div class="card-header">
+            <span class="card-title">✅ Submit Lab Entry</span>
+            <span class="badge-lite">Manual Mode</span>
+        </div>
 
-        <select id="subject">
-            <option value="" disabled selected>Tap to select lab session...</option>
-            <option value="Operating System Lab">Operating System Lab</option>
-            <option value="OOP Lab">OOP Lab</option>
-            <option value="Software Engineering Lab">Software Engineering Lab</option>
-        </select>
-        
-        <button onclick="submitLiteAttendance()" class="btn btn-submit">✅ Mark Present</button>
+        <div class="form-item">
+            <label for="attendance_student_id">Select Student</label>
+            <select id="attendance_student_id" class="custom-select">
+                <option value="" disabled selected>Tap to select student name...</option>
+                {% for student in students %}
+                    <option value="{{ student.id }}">{{ student.class_roll }} - {{ student.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-item">
+            <label for="subject">Select Lab Subject</label>
+            <select id="subject" class="custom-select">
+                <option value="" disabled selected>Tap to select lab session...</option>
+                <option value="Operating System Lab">Operating System Lab</option>
+                <option value="OOP Lab">OOP Lab</option>
+                <option value="Software Engineering Lab">Software Engineering Lab</option>
+            </select>
+        </div>
+
+        <button type="button" onclick="submitLiteAttendance()" class="btn-submit-lab">
+            <span>Mark Lab Present</span>
+            <span>✓</span>
+        </button>
     </div>
 
-    <!-- HISTORY CARD -->
+    <!-- Lab History & WhatsApp Card -->
     <div class="card">
-        <h3 class="card-title">📅 Today's Lab Log</h3>
-        
+        <div class="card-header">
+            <span class="card-title">📅 Today's Lab Log</span>
+            <span class="badge-lite">{{ records|length }} Present</span>
+        </div>
+
         <form action="/lab" method="GET">
-            <div class="filter-grid">
+            <div class="filter-row">
                 <input type="date" name="filter_date" id="filter_date" value="{{ filter_date or '' }}">
                 <select name="filter_subject" id="filter_subject">
                     <option value="">All Lab Sessions</option>
@@ -90,56 +390,52 @@
                 </select>
             </div>
             <div class="filter-actions">
-                <button type="submit" class="btn-filter">Search</button>
-                <a href="/lab" class="btn-clear">Reset</a>
+                <button type="submit" class="btn-filter">Search Log</button>
+                <a href="/lab" class="btn-reset">Reset</a>
             </div>
         </form>
 
-        <button onclick="sendWhatsAppReport()" class="btn btn-whatsapp">💬 Send WhatsApp Report</button>
+        <button type="button" onclick="sendWhatsAppReport()" class="btn-wa-report">
+            <span>💬 Send Lab Report to WhatsApp</span>
+        </button>
 
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Roll</th>
-                        <th>Student Name</th>
-                        <th>Lab Subject</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for att, student in records %}
-                    <tr>
-                        <td><strong>{{ student.class_roll }}</strong></td>
-                        <td>{{ student.name }}</td>
-                        <td>{{ att.subject }}</td>
-                        <td><span class="status-badge">Present</span></td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="4" style="text-align: center; color: #888; padding: 20px;">No attendance verified yet.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="log-stream">
+            {% for att, student in records %}
+            <div class="log-item">
+                <div class="log-info">
+                    <div class="log-name">{{ student.name }}</div>
+                    <div class="log-meta">
+                        <span class="log-roll">{{ student.class_roll }}</span>
+                        <span>{{ att.subject }}</span>
+                    </div>
+                </div>
+                <span class="status-pill">✓ Present</span>
+            </div>
+            {% else %}
+            <div class="empty-log">
+                No lab attendance marked for this session yet.
+            </div>
+            {% endfor %}
         </div>
     </div>
 
+</div>
+
 <script>
-    // LITE MODE: Bypass Camera and Submit Directly
     function submitLiteAttendance() {
         const studentId = document.getElementById('attendance_student_id').value;
         const subject = document.getElementById('subject').value;
 
         if (!studentId) {
-            return alert("Please select your name from the dropdown.");
+            return alert("⚠️ Please select a student name from the dropdown.");
         }
         if (!subject) {
-            return alert("Please select a lab subject.");
+            return alert("⚠️ Please select a lab subject.");
         }
 
-        const btn = document.querySelector('.btn-submit');
-        btn.innerText = "⏳ Submitting...";
+        const btn = document.querySelector('.btn-submit-lab');
+        const origText = btn.innerHTML;
+        btn.innerHTML = "<span>Submitting...</span>";
         btn.disabled = true;
 
         fetch('/lab_attendance', {
@@ -154,23 +450,23 @@
         })
         .catch(err => {
             alert("Network error. Please try again.");
-            btn.innerText = "✅ Mark Present";
+            btn.innerHTML = origText;
             btn.disabled = false;
         });
     }
 
-    // MOBILE-OPTIMIZED WHATSAPP FUNCTION
     async function sendWhatsAppReport() {
         const date = document.getElementById('filter_date').value;
         const subject = document.getElementById('filter_subject').value;
         
         if (!subject) {
-            alert("Please select a specific Lab Session from the dropdown before generating a report.");
+            alert("⚠️ Please select a specific Lab Session from the dropdown before generating the WhatsApp report.");
             return;
         }
         
-        const btn = document.querySelector('.btn-whatsapp');
-        btn.innerText = "⏳ Generating...";
+        const btn = document.querySelector('.btn-wa-report');
+        const origText = btn.innerHTML;
+        btn.innerHTML = "<span>⏳ Generating report...</span>";
         
         try {
             const response = await fetch(`/send_lab_report?date=${date}&subject=${encodeURIComponent(subject)}`);
@@ -178,30 +474,18 @@
             
             if (data.error) {
                 alert(data.error);
-                btn.innerText = "💬 Send WhatsApp Report";
+                btn.innerHTML = origText;
                 return;
             }
             
-            const textArea = document.createElement("textarea");
-            textArea.value = data.message;
-            document.body.appendChild(textArea);
-            textArea.select();
-            
-            try {
-                document.execCommand('copy');
-                alert(`✅ Report copied to clipboard!\n\nClick OK to open the ${subject} WhatsApp group, then just PASTE the message.`);
-                window.location.href = data.group_link; 
-            } catch (err) {
-                window.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(data.message)}`;
-            }
-            
-            document.body.removeChild(textArea);
+            // Open WhatsApp app directly with report pre-filled (instant on mobile)
+            window.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(data.message)}`;
             
         } catch (err) {
-            alert("Error generating report. Please try again.");
+            alert("Error generating report. Please check your connection.");
         }
         
-        btn.innerText = "💬 Send WhatsApp Report";
+        btn.innerHTML = origText;
     }
 </script>
 

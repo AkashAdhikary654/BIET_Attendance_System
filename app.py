@@ -242,6 +242,37 @@ def register_face():
     
     return "Face registration is disabled in Lite Mode."
 
+@app.route('/send_report')
+def send_report():
+    subject = request.args.get('subject')
+    date_str = request.args.get('date')
+    
+    if not subject:
+        return {"error": "Please select a subject first."}
+        
+    try:
+        filter_date_obj = datetime.strptime(date_str, '%Y-%m-%d').date() if date_str else date.today()
+    except ValueError:
+        filter_date_obj = date.today()
+        
+    records = db.session.query(Attendance, Student).join(Student).filter(
+        Attendance.subject == subject,
+        Attendance.date == filter_date_obj,
+        Attendance.status == "Present"
+    ).all()
+    
+    msg_text = f"*Date:* {filter_date_obj.strftime('%d-%b-%Y')}\n*Subject:* {subject}\n\n*Present Students:*\n"
+    
+    if not records:
+        msg_text += "No students marked present.\n"
+    else:
+        for i, (att, student) in enumerate(records, 1):
+            msg_text += f"{i}) {student.class_roll}--> {student.name}\n"
+            
+    group_link = SUBJECT_GROUPS.get(subject, "https://web.whatsapp.com")
+    
+    return {"message": msg_text, "group_link": group_link}
+
 @app.route('/send_lab_report')
 def send_lab_report():
     subject = request.args.get('subject')

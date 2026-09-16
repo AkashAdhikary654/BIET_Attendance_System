@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#1e293b">
+    <title>Add Student - BIET Attendance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --success: #10b981;
+            --surface: #ffffff;
+            --bg: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        .app-header {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: 700;
+            padding: 6px 10px;
+            border-radius: var(--radius-sm);
+            background: var(--primary-light);
+        }
+
+        .header-title {
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .header-spacer {
+            width: 70px;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px 16px;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 22px 18px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            height: 50px;
+            padding: 0 14px;
+            font-size: 15px;
+            font-weight: 500;
+            font-family: inherit;
+            color: var(--text-main);
+            background-color: #f8fafc;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        .btn-save {
+            width: 100%;
+            height: 52px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            margin-top: 24px;
+            transition: all 0.15s;
+        }
+
+        .btn-save:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+
+<header class="app-header">
+    <a href="/attendance" class="header-back">
+        <span>←</span>
+        <span>Back</span>
+    </a>
+    <div class="header-title">Add Student</div>
+    <div class="header-spacer"></div>
+</header>
+
+<div class="container">
+    <div class="card">
+        <form action="/add_student" method="POST">
+            <div class="form-group">
+                <label for="name">Student Full Name</label>
+                <input type="text" id="name" name="name" placeholder="e.g. ARIJIT SARKAR" required autocapitalize="words">
+            </div>
+
+            <div class="form-group">
+                <label for="class_roll">Class Roll</label>
+                <input type="text" id="class_roll" name="class_roll" placeholder="e.g. CSE-20/24" required autocapitalize="characters">
+                <div class="hint">Department roll format (e.g., CSE-20/24 or CSE-D 01/25)</div>
+            </div>
+
+            <div class="form-group">
+                <label for="roll_number">University Roll Number</label>
+                <input type="text" id="roll_number" name="roll_number" placeholder="e.g. 11800124002" required inputmode="numeric">
+                <div class="hint">11-digit university registration/roll number</div>
+            </div>
+
+            <button type="submit" class="btn-save">
+                <span>Save & Register Student</span>
+                <span>✓</span>
+            </button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

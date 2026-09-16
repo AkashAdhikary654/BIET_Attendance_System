@@ -2,92 +2,804 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Take Attendance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#1e293b">
+    <title>{{ stream }} {{ semester }} Attendance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f4f9; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #333; }
-        .date { text-align: center; color: #666; margin-bottom: 10px; }
-        .subject-select { text-align: center; margin-bottom: 20px; }
-        select { padding: 8px; font-size: 16px; border-radius: 4px; border: 1px solid #ccc; width: 80%; max-width: 300px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background-color: #007BFF; color: white; }
-        .submit-btn { display: block; width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
-        .submit-btn:hover { background: #218838; }
-        .top-nav { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center; }
-        .nav-link { text-decoration: none; color: #007BFF; font-weight: bold; }
-        .logout { color: #dc3545; }
-        .lab-btn { background: #ffc107; padding: 8px 12px; border-radius: 4px; color: black; margin-left: 15px; border: 1px solid #e0a800; }
-        .lab-btn:hover { background: #e0a800; }
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #10b981;
+            --success-dark: #059669;
+            --success-bg: #ecfdf5;
+            --success-border: #a7f3d0;
+            --surface: #ffffff;
+            --bg: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --bottom-dock-height: 80px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding-bottom: calc(var(--bottom-dock-height) + 24px);
+        }
+
+        /* Top Sticky Header */
+        .app-header {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .class-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .class-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.3px;
+        }
+
+        .date-chip {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #334155;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .icon-btn:active {
+            transform: scale(0.92);
+            background: #f1f5f9;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        /* Subject Picker Card */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+            margin-bottom: 16px;
+        }
+
+        .card-label {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper select {
+            width: 100%;
+            height: 50px;
+            padding: 0 42px 0 14px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            color: var(--text-main);
+            background-color: #f8fafc;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            appearance: none;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .select-wrapper select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: #ffffff;
+        }
+
+        .select-wrapper::after {
+            content: '';
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            width: 7px;
+            height: 7px;
+            border-right: 2px solid #64748b;
+            border-bottom: 2px solid #64748b;
+            transform: translateY(-70%) rotate(45deg);
+            pointer-events: none;
+        }
+
+        /* Toolbar Card */
+        .toolbar {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 14px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toolbar-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .stat-pill {
+            background: #f1f5f9;
+            padding: 6px 12px;
+            border-radius: 9999px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stat-pill .count {
+            color: var(--success-dark);
+            font-size: 15px;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-pill {
+            padding: 6px 12px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 700;
+            border: 1px solid var(--border);
+            background: #ffffff;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-pill:active {
+            transform: scale(0.95);
+            background: #f1f5f9;
+        }
+
+        .btn-pill-primary {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            color: var(--primary);
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            height: 42px;
+            padding: 0 14px 0 36px;
+            font-size: 14px;
+            font-family: inherit;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: #f8fafc;
+            color: var(--text-main);
+            transition: all 0.2s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: #ffffff;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            color: #94a3b8;
+            pointer-events: none;
+        }
+
+        /* Student List */
+        .student-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .student-card {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+
+        .student-card:active {
+            transform: scale(0.99);
+        }
+
+        .student-card.checked {
+            background: var(--success-bg);
+            border-color: var(--success);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.12);
+        }
+
+        .student-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .student-top-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .roll-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            background: #f1f5f9;
+            color: #1e293b;
+            padding: 3px 8px;
+            border-radius: 6px;
+            letter-spacing: -0.2px;
+        }
+
+        .student-card.checked .roll-badge {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .univ-roll {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .student-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Checkbox & Toggle Widget */
+        .toggle-container {
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .hidden-checkbox {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .custom-toggle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 2px solid #cbd5e1;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: transparent;
+            font-size: 16px;
+            font-weight: 800;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .student-card.checked .custom-toggle {
+            background: var(--success);
+            border-color: var(--success);
+            color: #ffffff;
+            transform: scale(1.05);
+            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);
+        }
+
+        /* Empty / No Results */
+        .empty-state {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 36px 20px;
+            text-align: center;
+            border: 1px dashed var(--border);
+        }
+
+        .empty-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+        }
+
+        .empty-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .empty-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Bottom Floating Dock */
+        .bottom-dock {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid var(--border);
+            padding: 12px 16px;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .dock-inner {
+            max-width: 520px;
+            margin: 0 auto;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .submit-btn {
+            flex: 1;
+            height: 52px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+            transition: all 0.2s ease;
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+
+        .submit-btn:disabled {
+            background: #94a3b8;
+            box-shadow: none;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Navigation Drawer / Quick Menu Modal */
+        .menu-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 100;
+            backdrop-filter: blur(4px);
+        }
+
+        .menu-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border-radius: 20px 20px 0 0;
+            padding: 20px 20px 34px 20px;
+            z-index: 101;
+            max-width: 520px;
+            margin: auto;
+            transform: translateY(100%);
+            transition: transform 0.25s ease-out;
+        }
+
+        .menu-backdrop.open {
+            display: block;
+        }
+
+        .menu-backdrop.open .menu-sheet {
+            transform: translateY(0);
+        }
+
+        .sheet-handle {
+            width: 40px;
+            height: 4px;
+            background: #cbd5e1;
+            border-radius: 2px;
+            margin: 0 auto 16px auto;
+        }
+
+        .sheet-title {
+            font-size: 17px;
+            font-weight: 800;
+            margin-bottom: 14px;
+            color: var(--text-main);
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .menu-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 16px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: #f8fafc;
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+            transition: background 0.15s;
+        }
+
+        .menu-item:active {
+            background: #e2e8f0;
+        }
+
+        .menu-item span.icon {
+            font-size: 22px;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="top-nav">
-        <div>
-            <a href="/view" class="nav-link">View Past Attendance</a>
-            <a href="/add_student" class="nav-link" style="margin-left: 15px; color: #28a745;">+ Add Student</a>
-            <a href="/lab" class="nav-link lab-btn">📷 Lab Attendance</a>
+<!-- Sticky Mobile App Bar -->
+<header class="app-header">
+    <div class="header-left">
+        <div class="class-badge">
+            <span class="class-title">{{ stream }} • {{ semester }}</span>
         </div>
-        <a href="/" class="nav-link logout">Change Class</a>
+        <span class="date-chip">📅 {{ date }}</span>
     </div>
-    
-    <h2>{{ stream }} - {{ semester }} Attendance</h2>
-    <div class="date">Date: {{ date }}</div>
+    <div class="header-actions">
+        <a href="/view" class="icon-btn" title="View History">📋</a>
+        <a href="/lab" class="icon-btn" title="Lab Portal">🧪</a>
+        <button type="button" class="icon-btn" onclick="toggleMenu()" title="Menu">⋮</button>
+    </div>
+</header>
 
-    <form action="/submit" method="POST">
-        <div class="subject-select">
-            <select name="subject" required>
-                <option value="" disabled selected>-- Select Subject --</option>
-                {% set subjects_list = ["Operating System", "Software Engineering", "OOP", "AI", "Compiler Design", "Industrial Management"] %}
-                
-                {% for sub in subjects_list %}
-                    <option value="{{ sub }}" {% if sub in submitted_subjects %}disabled style="color: #999; background: #eee;"{% endif %}>
-                        {{ sub }} {% if sub in submitted_subjects %} (Submitted) {% endif %}
-                    </option>
-                {% endfor %}
-            </select>
+<div class="container">
+    <form id="attendanceForm" action="/submit" method="POST">
+        <!-- Subject Selection -->
+        <div class="card">
+            <div class="card-label">
+                <span>Select Subject</span>
+                <span style="font-size: 11px; text-transform: none; color: #ef4444;">*Required</span>
+            </div>
+            <div class="select-wrapper">
+                <select name="subject" id="subjectSelect" required onchange="validateSubject()">
+                    <option value="" disabled selected>-- Tap to select subject --</option>
+                    {% set subjects_list = ["Operating System", "Software Engineering", "OOP", "AI", "Compiler Design", "Industrial Management"] %}
+                    {% for sub in subjects_list %}
+                        <option value="{{ sub }}" {% if sub in submitted_subjects %}disabled style="color: #94a3b8; background: #f1f5f9;"{% endif %}>
+                            {{ sub }}{% if sub in submitted_subjects %} (Already Done){% endif %}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Class Roll</th>
-                    <th>Univ. Roll No.</th>
-                    <th>Name</th>
-                    <th>Present</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% if students %}
-                    {% for student in students %}
-                    <tr>
-                        <td>{{ student.class_roll }}</td>
-                        <td>{{ student.roll_number }}</td>
-                        <td>{{ student.name }}</td>
-                        <td>
-                            <input type="checkbox" name="status_{{ student.id }}" value="Present" style="transform: scale(1.5); cursor: pointer;">
-                        </td>
-                    </tr>
-                    {% endfor %}
-                {% else %}
-                    <tr>
-                        <td colspan="4" style="text-align: center; color: #dc3545; font-weight: bold; padding: 20px;">
-                            No students registered for {{ stream }} - {{ semester }}.
-                        </td>
-                    </tr>
-                {% endif %}
-            </tbody>
-        </table>
-        
         {% if students %}
-        <button type="submit" class="submit-btn">Submit Attendance</button>
+        <!-- Roll Call Controls Toolbar -->
+        <div class="toolbar">
+            <div class="toolbar-top">
+                <div class="stat-pill">
+                    <span>Present:</span>
+                    <span class="count" id="presentCountDisplay">0</span>
+                    <span style="color: #94a3b8;">/ {{ students|length }}</span>
+                </div>
+                <div class="quick-actions">
+                    <button type="button" class="btn-pill btn-pill-primary" onclick="toggleAll(true)">All Present</button>
+                    <button type="button" class="btn-pill" onclick="toggleAll(false)">Clear</button>
+                </div>
+            </div>
+
+            <!-- Instant Search Box -->
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="search" id="studentSearch" placeholder="Quick search roll or student name..." oninput="filterStudents()" autocomplete="off">
+            </div>
+        </div>
+
+        <!-- Student Cards List -->
+        <div class="student-list" id="studentCardsContainer">
+            {% for student in students %}
+            <div class="student-card" id="card_{{ student.id }}" onclick="toggleStudent('{{ student.id }}')" data-search="{{ student.class_roll|lower }} {{ student.roll_number|lower }} {{ student.name|lower }}">
+                <div class="student-info">
+                    <div class="student-top-meta">
+                        <span class="roll-badge">{{ student.class_roll }}</span>
+                        <span class="univ-roll">{{ student.roll_number }}</span>
+                    </div>
+                    <div class="student-name">{{ student.name }}</div>
+                </div>
+                <div class="toggle-container">
+                    <input type="checkbox" 
+                           name="status_{{ student.id }}" 
+                           id="checkbox_{{ student.id }}" 
+                           value="Present" 
+                           class="hidden-checkbox"
+                           onchange="updateCardUI('{{ student.id }}')">
+                    <div class="custom-toggle" id="toggle_{{ student.id }}">✓</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div id="noResultsState" class="empty-state" style="display: none; margin-top: 16px;">
+            <div class="empty-icon">🔍</div>
+            <div class="empty-title">No matching student</div>
+            <div class="empty-desc">Check the roll number or name entered.</div>
+        </div>
+
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">👥</div>
+            <div class="empty-title">No Students Registered</div>
+            <div class="empty-desc">No student roster found for {{ stream }} - {{ semester }}.</div>
+            <a href="/add_student" class="btn-pill btn-pill-primary" style="display: inline-block; margin-top: 16px; padding: 10px 18px;">+ Add Student</a>
+        </div>
+        {% endif %}
+
+        <!-- Persistent Bottom Action Dock -->
+        {% if students %}
+        <div class="bottom-dock">
+            <div class="dock-inner">
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <span>Submit Attendance</span>
+                    <span id="btnCountBadge" style="background: rgba(255,255,255,0.25); padding: 2px 8px; border-radius: 999px; font-size: 13px;">0</span>
+                    <span>→</span>
+                </button>
+            </div>
+        </div>
         {% endif %}
     </form>
 </div>
+
+<!-- Mobile Quick Menu Bottom Sheet -->
+<div class="menu-backdrop" id="menuBackdrop" onclick="toggleMenu()">
+    <div class="menu-sheet" onclick="event.stopPropagation()">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title">Quick Actions</div>
+        <div class="menu-grid">
+            <a href="/view" class="menu-item">
+                <span class="icon">📋</span>
+                <span>Past History</span>
+            </a>
+            <a href="/lab" class="menu-item">
+                <span class="icon">🧪</span>
+                <span>Lab Portal</span>
+            </a>
+            <a href="/add_student" class="menu-item">
+                <span class="icon">👤</span>
+                <span>Add Student</span>
+            </a>
+            <a href="/" class="menu-item">
+                <span class="icon">🔄</span>
+                <span>Change Class</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Toggle Card Tap Handler
+    function toggleStudent(studentId) {
+        const checkbox = document.getElementById('checkbox_' + studentId);
+        if (checkbox) {
+            checkbox.checked = !checkbox.checked;
+            updateCardUI(studentId);
+            updateTotalCount();
+        }
+    }
+
+    // Update Single Card Visuals
+    function updateCardUI(studentId) {
+        const checkbox = document.getElementById('checkbox_' + studentId);
+        const card = document.getElementById('card_' + studentId);
+        if (checkbox && card) {
+            if (checkbox.checked) {
+                card.classList.add('checked');
+            } else {
+                card.classList.remove('checked');
+            }
+        }
+    }
+
+    // Toggle All (Select All / Clear)
+    function toggleAll(shouldCheck) {
+        const cards = document.querySelectorAll('.student-card');
+        cards.forEach(card => {
+            // If filtered by search, only modify visible cards
+            if (card.style.display !== 'none') {
+                const checkbox = card.querySelector('.hidden-checkbox');
+                if (checkbox) {
+                    checkbox.checked = shouldCheck;
+                    if (shouldCheck) {
+                        card.classList.add('checked');
+                    } else {
+                        card.classList.remove('checked');
+                    }
+                }
+            }
+        });
+        updateTotalCount();
+    }
+
+    // Update Live Count Pill and Submit Button Badge
+    function updateTotalCount() {
+        const allCheckboxes = document.querySelectorAll('.hidden-checkbox');
+        let presentCount = 0;
+        allCheckboxes.forEach(cb => {
+            if (cb.checked) presentCount++;
+        });
+
+        const countDisplay = document.getElementById('presentCountDisplay');
+        const btnBadge = document.getElementById('btnCountBadge');
+        if (countDisplay) countDisplay.textContent = presentCount;
+        if (btnBadge) btnBadge.textContent = `${presentCount} Present`;
+    }
+
+    // Instant Filter/Search by Roll or Name
+    function filterStudents() {
+        const query = document.getElementById('studentSearch').value.trim().toLowerCase();
+        const cards = document.querySelectorAll('.student-card');
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const data = card.getAttribute('data-search') || '';
+            if (!query || data.includes(query)) {
+                card.style.display = 'flex';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        const emptyState = document.getElementById('noResultsState');
+        if (emptyState) {
+            emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+    }
+
+    // Validate Subject selection before submit
+    function validateSubject() {
+        const select = document.getElementById('subjectSelect');
+        return select.value !== "";
+    }
+
+    document.getElementById('attendanceForm')?.addEventListener('submit', function(e) {
+        const subject = document.getElementById('subjectSelect');
+        if (!subject || !subject.value) {
+            e.preventDefault();
+            alert("⚠️ Please select a subject before submitting.");
+            subject.focus();
+            return false;
+        }
+
+        const presentCount = document.querySelectorAll('.hidden-checkbox:checked').length;
+        if (!confirm(`Submit attendance for ${subject.value} with ${presentCount} student(s) marked Present?`)) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    // Mobile Bottom Sheet Menu
+    function toggleMenu() {
+        const backdrop = document.getElementById('menuBackdrop');
+        backdrop.classList.toggle('open');
+    }
+
+    // Init count on load
+    updateTotalCount();
+</script>
 
 </body>
 </html>

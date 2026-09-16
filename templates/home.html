@@ -2,47 +2,307 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Class Setup</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#2563eb">
+    <title>BIET Attendance - Class Setup</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f4f9; display: flex; justify-content: center; align-items: center; height: 80vh; }
-        .setup-box { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 100%; max-width: 350px; }
-        h2 { text-align: center; color: #333; margin-top: 0; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; color: #666; font-weight: bold; }
-        select { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
-        .enter-btn { width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; margin-top: 10px; font-weight: bold; }
-        .enter-btn:hover { background: #218838; }
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #dbeafe;
+            --surface: #ffffff;
+            --bg: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(180deg, #eff6ff 0%, #f8fafc 40%, #f1f5f9 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 16px;
+            color: var(--text-main);
+        }
+
+        .phone-wrapper {
+            width: 100%;
+            max-width: 420px;
+            margin: auto;
+        }
+
+        .brand-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .app-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--surface);
+            padding: 6px 14px;
+            border-radius: 9999px;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12);
+            border: 1px solid var(--border);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .app-badge span {
+            font-size: 16px;
+        }
+
+        .brand-header h1 {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .brand-header p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 24px 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #2563eb, #38ef7d);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 8px;
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper select {
+            width: 100%;
+            height: 52px;
+            padding: 0 42px 0 16px;
+            font-size: 16px;
+            font-weight: 500;
+            font-family: inherit;
+            color: var(--text-main);
+            background-color: #f8fafc;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            appearance: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .select-wrapper select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px var(--primary-light);
+        }
+
+        .select-wrapper::after {
+            content: '';
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            border-right: 2px solid #64748b;
+            border-bottom: 2px solid #64748b;
+            transform: translateY(-70%) rotate(45deg);
+            pointer-events: none;
+        }
+
+        .enter-btn {
+            width: 100%;
+            height: 54px;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+            transition: all 0.2s ease;
+            margin-top: 10px;
+        }
+
+        .enter-btn:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+        }
+
+        .quick-nav {
+            margin-top: 24px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .nav-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px 12px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text-main);
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-card:active {
+            transform: scale(0.97);
+            background: #f8fafc;
+        }
+
+        .nav-card .icon {
+            font-size: 20px;
+        }
+
+        .nav-card .label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 24px;
+        }
     </style>
 </head>
 <body>
-<div class="setup-box">
-    <h2>Select Class</h2>
-    <form action="/" method="POST">
-        <div class="form-group">
-            <label>Stream</label>
-            <select name="stream" required>
-                <option value="CSE" selected>Computer Science (CSE)</option>
-                <option value="IT">Information Technology (IT)</option>
-                <option value="ECE">Electronics (ECE)</option>
-                <option value="EE">Electrical (EE)</option>
-                <option value="ME">Mechanical (ME)</option>
-            </select>
+
+<div class="phone-wrapper">
+    <div class="brand-header">
+        <div class="app-badge">
+            <span>🎓</span> BIET Portal
         </div>
-        <div class="form-group">
-            <label>Semester</label>
-            <select name="semester" required>
-                <option value="1st">1st Semester</option>
-                <option value="2nd">2nd Semester</option>
-                <option value="3rd">3rd Semester</option>
-                <option value="4th">4th Semester</option>
-                <option value="5th" selected>5th Semester</option>
-                <option value="6th">6th Semester</option>
-                <option value="7th">7th Semester</option>
-                <option value="8th">8th Semester</option>
-            </select>
-        </div>
-        <button type="submit" class="enter-btn">Enter</button>
-    </form>
+        <h1>Class Attendance</h1>
+        <p>Choose your Department & Semester to begin</p>
+    </div>
+
+    <div class="card">
+        <form action="/" method="POST">
+            <div class="form-group">
+                <label for="stream">
+                    <span>🏛️</span> Stream / Department
+                </label>
+                <div class="select-wrapper">
+                    <select name="stream" id="stream" required>
+                        <option value="CSE" selected>Computer Science (CSE)</option>
+                        <option value="IT">Information Technology (IT)</option>
+                        <option value="ECE">Electronics & Comm. (ECE)</option>
+                        <option value="EE">Electrical (EE)</option>
+                        <option value="ME">Mechanical (ME)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="semester">
+                    <span>📅</span> Semester
+                </label>
+                <div class="select-wrapper">
+                    <select name="semester" id="semester" required>
+                        <option value="1st">1st Semester</option>
+                        <option value="2nd">2nd Semester</option>
+                        <option value="3rd">3rd Semester</option>
+                        <option value="4th">4th Semester</option>
+                        <option value="5th" selected>5th Semester</option>
+                        <option value="6th">6th Semester</option>
+                        <option value="7th">7th Semester</option>
+                        <option value="8th">8th Semester</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="enter-btn">
+                <span>Start Roll Call</span>
+                <span>→</span>
+            </button>
+        </form>
+    </div>
+
+    <div class="quick-nav">
+        <a href="/view" class="nav-card">
+            <span class="icon">📋</span>
+            <span class="label">Past Records</span>
+        </a>
+        <a href="/lab" class="nav-card">
+            <span class="icon">🧪</span>
+            <span class="label">Lab Portal</span>
+        </a>
+    </div>
+
+    <div class="footer-note">
+        BIET Suri • Attendance Management System
+    </div>
 </div>
+
 </body>
 </html>
