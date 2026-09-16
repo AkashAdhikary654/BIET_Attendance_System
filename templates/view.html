@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#1e293b">
     <title>Attendance History</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --primary: #2563eb;
@@ -89,57 +93,6 @@
             max-width: 520px;
             margin: 0 auto;
             padding: 16px;
-        }
-
-        /* WhatsApp Share Hero Card */
-        .wa-hero-card {
-            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            color: white;
-            box-shadow: 0 8px 20px rgba(37, 211, 102, 0.28);
-            margin-bottom: 18px;
-            text-align: center;
-        }
-
-        .wa-hero-card h3 {
-            font-size: 18px;
-            font-weight: 800;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .wa-hero-card p {
-            font-size: 13px;
-            opacity: 0.9;
-            margin-bottom: 16px;
-            line-height: 1.4;
-        }
-
-        .wa-btn {
-            width: 100%;
-            height: 50px;
-            background: #ffffff;
-            color: #128C7E;
-            border: none;
-            border-radius: var(--radius-md);
-            font-size: 15px;
-            font-weight: 800;
-            font-family: inherit;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            transition: all 0.15s;
-        }
-
-        .wa-btn:active {
-            transform: scale(0.98);
         }
 
         /* Filter Card */
@@ -364,172 +317,250 @@
             font-size: 13px;
             color: var(--text-muted);
         }
+
+        .wa-btn {
+            width: 100%;
+            height: 50px;
+            background: #ffffff;
+            color: #128C7E;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-weight: 800;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.15s;
+        }
+
+        .wa-btn:active {
+            transform: scale(0.98);
+        }
     </style>
 </head>
+
 <body>
 
-<!-- Header -->
-<header class="app-header">
-    <a href="/attendance" class="header-back">
-        <span>←</span>
-        <span>Back</span>
-    </a>
-    <div class="header-title">Attendance Log</div>
-    <div class="header-spacer"></div>
-</header>
+    <!-- Header -->
+    <header class="app-header">
+        <a href="/attendance" class="header-back">
+            <span>←</span>
+            <span>Back</span>
+        </a>
+        <div class="header-title">Attendance Log</div>
+        <div class="header-spacer"></div>
+    </header>
 
-<div class="container">
+    <div class="container">
 
-    <!-- Filter Card -->
-    <div class="filter-card">
-        <div class="filter-header">
-            <span class="filter-title">🔍 Filter Records</span>
-            <a href="/view" class="reset-link">Reset</a>
+        <!-- Filter Card -->
+        <div class="filter-card">
+            <div class="filter-header">
+                <span class="filter-title">🔍 Filter Records</span>
+                <a href="/view" class="reset-link">Reset</a>
+            </div>
+
+            <form action="/view" method="GET">
+                <div class="filter-grid">
+                    <div class="filter-item">
+                        <label for="filter_date">Date</label>
+                        <input type="date" name="filter_date" id="filter_date" value="{{ filter_date or '' }}">
+                    </div>
+
+                    <div class="filter-item">
+                        <label for="filter_subject">Subject</label>
+                        <select name="filter_subject" id="filter_subject">
+                            <option value="">All Subjects</option>
+                            <option value="Operating System" {% if filter_subject=='Operating System' %}selected{% endif
+                                %}>Operating System</option>
+                            <option value="Software Engineering" {% if filter_subject=='Software Engineering'
+                                %}selected{% endif %}>Software Engineering</option>
+                            <option value="OOP" {% if filter_subject=='OOP' %}selected{% endif %}>OOP</option>
+                            <option value="AI" {% if filter_subject=='AI' %}selected{% endif %}>AI</option>
+                            <option value="Compiler Design" {% if filter_subject=='Compiler Design' %}selected{% endif
+                                %}>Compiler Design</option>
+                            <option value="Industrial Management" {% if filter_subject=='Industrial Management'
+                                %}selected{% endif %}>Industrial Management</option>
+                            <option value="Operating System Lab" {% if filter_subject=='Operating System Lab'
+                                %}selected{% endif %}>Operating System Lab</option>
+                            <option value="OOP Lab" {% if filter_subject=='OOP Lab' %}selected{% endif %}>OOP Lab
+                            </option>
+                            <option value="Software Engineering Lab" {% if filter_subject=='Software Engineering Lab'
+                                %}selected{% endif %}>Software Engineering Lab</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-item">
+                        <label for="filter_status">Status</label>
+                        <select name="filter_status" id="filter_status">
+                            <option value="" {% if filter_status=='' %}selected{% endif %}>All (Present & Absent)
+                            </option>
+                            <option value="Present" {% if filter_status=='Present' %}selected{% endif %}>Present Only
+                            </option>
+                            <option value="Absent" {% if filter_status=='Absent' %}selected{% endif %}>Absent Only
+                            </option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="filter-btn">Apply Filters</button>
+                </div>
+            </form>
         </div>
 
-        <form action="/view" method="GET">
-            <div class="filter-grid">
-                <div class="filter-item">
-                    <label for="filter_date">Date</label>
-                    <input type="date" name="filter_date" id="filter_date" value="{{ filter_date or '' }}">
-                </div>
-
-                <div class="filter-item">
-                    <label for="filter_subject">Subject</label>
-                    <select name="filter_subject" id="filter_subject">
-                        <option value="">All Subjects</option>
-                        <option value="Operating System" {% if filter_subject == 'Operating System' %}selected{% endif %}>Operating System</option>
-                        <option value="Software Engineering" {% if filter_subject == 'Software Engineering' %}selected{% endif %}>Software Engineering</option>
-                        <option value="OOP" {% if filter_subject == 'OOP' %}selected{% endif %}>OOP</option>
-                        <option value="AI" {% if filter_subject == 'AI' %}selected{% endif %}>AI</option>
-                        <option value="Compiler Design" {% if filter_subject == 'Compiler Design' %}selected{% endif %}>Compiler Design</option>
-                        <option value="Industrial Management" {% if filter_subject == 'Industrial Management' %}selected{% endif %}>Industrial Management</option>
-                        <option value="Operating System Lab" {% if filter_subject == 'Operating System Lab' %}selected{% endif %}>Operating System Lab</option>
-                        <option value="Object Oriented Lab" {% if filter_subject == 'Object Oriented Lab' %}selected{% endif %}>Object Oriented Lab</option>
-                        <option value="Software Engineering Lab" {% if filter_subject == 'Software Engineering Lab' %}selected{% endif %}>Software Engineering Lab</option>
-                    </select>
-                </div>
-
-                <div class="filter-item">
-                    <label for="filter_status">Status</label>
-                    <select name="filter_status" id="filter_status">
-                        <option value="" {% if filter_status == '' %}selected{% endif %}>All (Present & Absent)</option>
-                        <option value="Present" {% if filter_status == 'Present' %}selected{% endif %}>Present Only</option>
-                        <option value="Absent" {% if filter_status == 'Absent' %}selected{% endif %}>Absent Only</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="filter-btn">Apply Filters</button>
+        <!-- Always-Visible WhatsApp Report Card -->
+        <div class="wa-report-card"
+            style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); border-radius: var(--radius-lg); padding: 16px 18px; color: white; box-shadow: 0 6px 16px rgba(37, 211, 102, 0.22); margin-bottom: 18px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                <span style="font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 6px;">💬 Send
+                    Report to WhatsApp</span>
+                <span id="waSubjectHint"
+                    style="font-size: 11px; opacity: 0.85; background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 6px;">Select
+                    subject first</span>
             </div>
-        </form>
-    </div>
-
-    <!-- Always-Visible WhatsApp Report Card -->
-    <div class="wa-report-card" style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); border-radius: var(--radius-lg); padding: 16px 18px; color: white; box-shadow: 0 6px 16px rgba(37, 211, 102, 0.22); margin-bottom: 18px;">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-            <span style="font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 6px;">💬 Send Report to WhatsApp</span>
-            <span id="waSubjectHint" style="font-size: 11px; opacity: 0.85; background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 6px;">Select subject first</span>
+            <button type="button" onclick="generateAndSendReport()" id="waReportBtn" class="wa-btn">
+                <span>📱 Copy Report & Open Group</span>
+            </button>
         </div>
-        <button onclick="generateAndSendReport()" id="waReportBtn" class="wa-btn" style="width: 100%; height: 48px; background: #ffffff; color: #128C7E; border: none; border-radius: var(--radius-md); font-size: 15px; font-weight: 800; font-family: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 3px 8px rgba(0,0,0,0.08);">
-            <span>📱 Copy Report & Open Group</span>
-        </button>
-    </div>
 
-    {% if encoded_msg %}
-    <div style="background: var(--success-bg); border: 1px solid #a7f3d0; border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px; text-align: center;">
-        <span style="font-size: 14px; font-weight: 700; color: #059669;">✅ Attendance just submitted — report ready above!</span>
-    </div>
-    {% endif %}
+        {% if encoded_msg %}
+        <div
+            style="background: var(--success-bg); border: 1px solid #a7f3d0; border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px; text-align: center;">
+            <span style="font-size: 14px; font-weight: 700; color: #059669;">✅ Attendance just submitted — report ready
+                above!</span>
+        </div>
+        {% endif %}
 
-    <!-- Results Stream -->
-    <div class="results-header">
-        <span class="results-count">Showing {{ records|length }} records</span>
-    </div>
+        <!-- Results Stream -->
+        <div class="results-header">
+            <span class="results-count">Showing {{ records|length }} records</span>
+        </div>
 
-    <div class="record-stream">
-        {% for att, student in records %}
-        <div class="record-card">
-            <div class="record-left">
-                <div class="record-name">{{ student.name }}</div>
-                <div class="record-meta">
-                    <span class="record-roll">{{ student.roll_number }}</span>
-                    <span class="record-subject">{{ att.subject }}</span>
+        <div class="record-stream">
+            {% for att, student in records %}
+            <div class="record-card">
+                <div class="record-left">
+                    <div class="record-name">{{ student.name }}</div>
+                    <div class="record-meta">
+                        <span class="record-roll">{{ student.class_roll }}</span>
+                        <span class="record-subject">{{ att.subject }}</span>
+                    </div>
+                    <div class="record-date">📅 {{ att.date.strftime('%d %b, %Y') }}</div>
                 </div>
-                <div class="record-date">📅 {{ att.date.strftime('%d %b, %Y') }}</div>
-            </div>
-            <div>
-                {% if att.status == 'Present' %}
+                <div>
+                    {% if att.status == 'Present' %}
                     <span class="badge-status badge-present">✓ Present</span>
-                {% else %}
+                    {% else %}
                     <span class="badge-status badge-absent">✕ Absent</span>
-                {% endif %}
+                    {% endif %}
+                </div>
             </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📂</div>
+                <div class="empty-title">No Records Found</div>
+                <div class="empty-desc">No attendance records match your filter criteria.</div>
+            </div>
+            {% endfor %}
         </div>
-        {% else %}
-        <div class="empty-state">
-            <div class="empty-icon">📂</div>
-            <div class="empty-title">No Records Found</div>
-            <div class="empty-desc">No attendance records match your filter criteria.</div>
+
+        <!-- FOOTER -->
+        <div style="text-align: center; font-size: 12px; color: #64748b; margin-top: 30px; padding-bottom: 20px;">
+            BIET Suri • Attendance Management System<br>
+            <span style="margin-top: 5px; display: inline-block;">
+                Contact: <a href="mailto:akashadhikary654@gmail.com"
+                    style="color: #2563eb; text-decoration: none; font-weight: 600;">akashadhikary654@gmail.com</a>
+            </span>
         </div>
-        {% endfor %}
+
     </div>
 
-</div>
-
-<script>
-    // Update WhatsApp hint when subject changes
-    const subjectSelect = document.getElementById('filter_subject');
-    const waHint = document.getElementById('waSubjectHint');
-    function updateWaHint() {
-        const subj = subjectSelect.value;
-        if (subj) {
-            waHint.textContent = subj;
-            waHint.style.opacity = '1';
-        } else {
-            waHint.textContent = 'Select subject first';
-            waHint.style.opacity = '0.85';
+    <script>
+        // Update WhatsApp hint when subject changes
+        const subjectSelect = document.getElementById('filter_subject');
+        const waHint = document.getElementById('waSubjectHint');
+        function updateWaHint() {
+            const subj = subjectSelect.value;
+            if (subj) {
+                waHint.textContent = subj;
+                waHint.style.opacity = '1';
+            } else {
+                waHint.textContent = 'Select subject first';
+                waHint.style.opacity = '0.85';
+            }
         }
-    }
-    subjectSelect.addEventListener('change', updateWaHint);
-    updateWaHint();
+        subjectSelect.addEventListener('change', updateWaHint);
+        updateWaHint();
 
-    // Generate Report via API and open WhatsApp directly
-    async function generateAndSendReport() {
-        const subject = document.getElementById('filter_subject').value;
-        const dateVal = document.getElementById('filter_date').value;
+        function generateAndSendReport() {
+            const subjectStr = document.getElementById('filter_subject').value;
+            const dateInput = document.getElementById('filter_date').value;
 
-        if (!subject) {
-            alert("⚠️ Please select a specific Subject from the filter dropdown first, then tap this button.");
-            return;
-        }
-
-        const btn = document.getElementById('waReportBtn');
-        const origHTML = btn.innerHTML;
-        btn.innerHTML = "<span>⏳ Generating...</span>";
-        btn.disabled = true;
-
-        try {
-            const response = await fetch(`/send_report?date=${dateVal}&subject=${encodeURIComponent(subject)}`);
-            const data = await response.json();
-
-            if (data.error) {
-                alert(data.error);
-                btn.innerHTML = origHTML;
-                btn.disabled = false;
+            if (!subjectStr) {
+                alert("⚠️ Please select a specific Subject from the filter dropdown first.");
                 return;
             }
 
-            // Open WhatsApp app directly with the report pre-filled (instant on mobile)
-            window.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(data.message)}`;
+            const btn = document.getElementById('waReportBtn');
+            btn.innerHTML = "<span>⏳ Processing...</span>";
 
-        } catch (err) {
-            alert("❌ Error generating report. Please check your connection.");
+            // 1. Full Group Links Dictionary
+            const groupLinks = {
+                "Operating System": "https://chat.whatsapp.com/GlkuWa1NF5EAmaRiJXknxJ",
+                "Software Engineering": "https://chat.whatsapp.com/EiXy94poebVHMEm8mJ2eXS",
+                "OOP": "https://chat.whatsapp.com/BDbvoBvSpCF0A9NpdbdOpU",
+                "AI": "https://chat.whatsapp.com/GKla8rGTWuA7qsnhK9lTVh",
+                "Compiler Design": "https://chat.whatsapp.com/CJjap6DGwLs6Nf1a05ECA8",
+                "Industrial Management": "https://chat.whatsapp.com/L5FAw8gqyUNGfJCxxef2zT?s=sh&p=a&mlu=0&ilr=4",
+                "Operating System Lab": "https://chat.whatsapp.com/BDmV2RpP7mg8n5SrVqjxVZ?s=cl&p=a&mlu=4&ilr=4",
+                "OOP Lab": "https://chat.whatsapp.com/BDbvoBvSpCF0A9NpdbdOpU",
+                "Software Engineering Lab": "https://chat.whatsapp.com/EiXy94poebVHMEm8mJ2eXS"
+            };
+            const link = groupLinks[subjectStr] || "https://web.whatsapp.com";
+
+            // 2. Format the Date locally
+            const d = dateInput ? new Date(dateInput) : new Date();
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const formattedDate = `${String(d.getDate()).padStart(2, '0')}-${months[d.getMonth()]}-${d.getFullYear()}`;
+
+            // 3. Build message instantly from the screen
+            let reportText = `*Date:* ${formattedDate}\n*Subject:* ${subjectStr}\n\n*Present Students:*\n`;
+            const records = document.querySelectorAll('.record-card');
+            let count = 1;
+
+            records.forEach(card => {
+                const isPresent = card.querySelector('.badge-present');
+                if (isPresent) {
+                    const name = card.querySelector('.record-name').innerText.trim();
+                    const roll = card.querySelector('.record-roll').innerText.trim();
+                    reportText += `${count}) ${roll}--> ${name}\n`;
+                    count++;
+                }
+            });
+
+            if (count === 1) {
+                reportText += "No students marked present.\n";
+            }
+
+            // 4. Synchronous Copy (Cannot be blocked)
+            const textArea = document.createElement("textarea");
+            textArea.value = reportText;
+            textArea.style.position = "absolute";
+            textArea.style.left = "-9999px"; // Hides securely off-screen
+            document.body.appendChild(textArea);
+            textArea.select();
+            try { document.execCommand('copy'); } catch (e) { }
+            document.body.removeChild(textArea);
+
+            // 5. Instant Redirect
+            btn.innerHTML = "<span>✅ Opening WhatsApp Group...</span>";
+            window.location.replace(link);
         }
-
-        btn.innerHTML = origHTML;
-        btn.disabled = false;
-    }
-</script>
+    </script>
 
 </body>
+
 </html>

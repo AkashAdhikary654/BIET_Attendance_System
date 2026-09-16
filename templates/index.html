@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#1e293b">
     <title>{{ stream }} {{ semester }} Attendance</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --primary: #2563eb;
@@ -549,257 +553,269 @@
         }
     </style>
 </head>
+
 <body>
 
-<!-- Sticky Mobile App Bar -->
-<header class="app-header">
-    <div class="header-left">
-        <div class="class-badge">
-            <span class="class-title">{{ stream }} • {{ semester }}</span>
-        </div>
-        <span class="date-chip">📅 {{ date }}</span>
-    </div>
-    <div class="header-actions">
-        <a href="/view" class="icon-btn" title="View History">📋</a>
-        <a href="/lab" class="icon-btn" title="Lab Portal">🧪</a>
-        <button type="button" class="icon-btn" onclick="toggleMenu()" title="Menu">⋮</button>
-    </div>
-</header>
-
-<div class="container">
-    <form id="attendanceForm" action="/submit" method="POST">
-        <!-- Subject Selection -->
-        <div class="card">
-            <div class="card-label">
-                <span>Select Subject</span>
-                <span style="font-size: 11px; text-transform: none; color: #ef4444;">*Required</span>
+    <!-- Sticky Mobile App Bar -->
+    <header class="app-header">
+        <div class="header-left">
+            <div class="class-badge">
+                <span class="class-title">{{ stream }} • {{ semester }}</span>
             </div>
-            <div class="select-wrapper">
-                <select name="subject" id="subjectSelect" required onchange="validateSubject()">
-                    <option value="" disabled selected>-- Tap to select subject --</option>
-                    {% set subjects_list = ["Operating System", "Software Engineering", "OOP", "AI", "Compiler Design", "Industrial Management"] %}
-                    {% for sub in subjects_list %}
-                        <option value="{{ sub }}" {% if sub in submitted_subjects %}disabled style="color: #94a3b8; background: #f1f5f9;"{% endif %}>
+            <span class="date-chip">📅 {{ date }}</span>
+        </div>
+        <div class="header-actions">
+            <a href="/view" class="icon-btn" title="View History">📋</a>
+            <a href="/lab" class="icon-btn" title="Lab Portal">🧪</a>
+            <button type="button" class="icon-btn" onclick="toggleMenu()" title="Menu">⋮</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <form id="attendanceForm" action="/submit" method="POST">
+            <!-- Subject Selection -->
+            <div class="card">
+                <div class="card-label">
+                    <span>Select Subject</span>
+                    <span style="font-size: 11px; text-transform: none; color: #ef4444;">*Required</span>
+                </div>
+                <div class="select-wrapper">
+                    <select name="subject" id="subjectSelect" required onchange="validateSubject()">
+                        <option value="" disabled selected>-- Tap to select subject --</option>
+                        {% set subjects_list = ["Operating System", "Software Engineering", "OOP", "AI", "Compiler
+                        Design", "Industrial Management"] %}
+                        {% for sub in subjects_list %}
+                        <option value="{{ sub }}" {% if sub in submitted_subjects %}disabled
+                            style="color: #94a3b8; background: #f1f5f9;" {% endif %}>
                             {{ sub }}{% if sub in submitted_subjects %} (Already Done){% endif %}
                         </option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
-
-        {% if students %}
-        <!-- Roll Call Controls Toolbar -->
-        <div class="toolbar">
-            <div class="toolbar-top">
-                <div class="stat-pill">
-                    <span>Present:</span>
-                    <span class="count" id="presentCountDisplay">0</span>
-                    <span style="color: #94a3b8;">/ {{ students|length }}</span>
-                </div>
-                <div class="quick-actions">
-                    <button type="button" class="btn-pill btn-pill-primary" onclick="toggleAll(true)">All Present</button>
-                    <button type="button" class="btn-pill" onclick="toggleAll(false)">Clear</button>
+                        {% endfor %}
+                    </select>
                 </div>
             </div>
 
-            <!-- Instant Search Box -->
-            <div class="search-box">
-                <span class="search-icon">🔍</span>
-                <input type="search" id="studentSearch" placeholder="Quick search roll or student name..." oninput="filterStudents()" autocomplete="off">
-            </div>
-        </div>
-
-        <!-- Student Cards List -->
-        <div class="student-list" id="studentCardsContainer">
-            {% for student in students %}
-            <div class="student-card" id="card_{{ student.id }}" onclick="toggleStudent('{{ student.id }}')" data-search="{{ student.class_roll|lower }} {{ student.roll_number|lower }} {{ student.name|lower }}">
-                <div class="student-info">
-                    <div class="student-top-meta">
-                        <span class="roll-badge">{{ student.class_roll }}</span>
-                        <span class="univ-roll">{{ student.roll_number }}</span>
+            {% if students %}
+            <!-- Roll Call Controls Toolbar -->
+            <div class="toolbar">
+                <div class="toolbar-top">
+                    <div class="stat-pill">
+                        <span>Present:</span>
+                        <span class="count" id="presentCountDisplay">0</span>
+                        <span style="color: #94a3b8;">/ {{ students|length }}</span>
                     </div>
-                    <div class="student-name">{{ student.name }}</div>
+                    <div class="quick-actions">
+                        <button type="button" class="btn-pill btn-pill-primary" onclick="toggleAll(true)">All
+                            Present</button>
+                        <button type="button" class="btn-pill" onclick="toggleAll(false)">Clear</button>
+                    </div>
                 </div>
-                <div class="toggle-container">
-                    <input type="checkbox" 
-                           name="status_{{ student.id }}" 
-                           id="checkbox_{{ student.id }}" 
-                           value="Present" 
-                           class="hidden-checkbox"
-                           onchange="updateCardUI('{{ student.id }}')">
-                    <div class="custom-toggle" id="toggle_{{ student.id }}">✓</div>
+
+                <!-- Instant Search Box -->
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="search" id="studentSearch" placeholder="Quick search roll or student name..."
+                        oninput="filterStudents()" autocomplete="off">
                 </div>
             </div>
-            {% endfor %}
-        </div>
 
-        <div id="noResultsState" class="empty-state" style="display: none; margin-top: 16px;">
-            <div class="empty-icon">🔍</div>
-            <div class="empty-title">No matching student</div>
-            <div class="empty-desc">Check the roll number or name entered.</div>
-        </div>
+            <!-- Student Cards List -->
+            <div class="student-list" id="studentCardsContainer">
+                {% for student in students %}
+                <div class="student-card" id="card_{{ student.id }}" onclick="toggleStudent('{{ student.id }}')"
+                    data-search="{{ student.class_roll|lower }} {{ student.roll_number|lower }} {{ student.name|lower }}">
+                    <div class="student-info">
+                        <div class="student-top-meta">
+                            <span class="roll-badge">{{ student.class_roll }}</span>
+                            <span class="univ-roll">{{ student.roll_number }}</span>
+                        </div>
+                        <div class="student-name">{{ student.name }}</div>
+                    </div>
+                    <div class="toggle-container">
+                        <input type="checkbox" name="status_{{ student.id }}" id="checkbox_{{ student.id }}"
+                            value="Present" class="hidden-checkbox" onchange="updateCardUI('{{ student.id }}')">
+                        <div class="custom-toggle" id="toggle_{{ student.id }}">✓</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
 
-        {% else %}
-        <div class="empty-state">
-            <div class="empty-icon">👥</div>
-            <div class="empty-title">No Students Registered</div>
-            <div class="empty-desc">No student roster found for {{ stream }} - {{ semester }}.</div>
-            <a href="/add_student" class="btn-pill btn-pill-primary" style="display: inline-block; margin-top: 16px; padding: 10px 18px;">+ Add Student</a>
-        </div>
-        {% endif %}
+            <div id="noResultsState" class="empty-state" style="display: none; margin-top: 16px;">
+                <div class="empty-icon">🔍</div>
+                <div class="empty-title">No matching student</div>
+                <div class="empty-desc">Check the roll number or name entered.</div>
+            </div>
 
-        <!-- Persistent Bottom Action Dock -->
-        {% if students %}
-        <div class="bottom-dock">
-            <div class="dock-inner">
-                <button type="submit" class="submit-btn" id="submitBtn">
-                    <span>Submit Attendance</span>
-                    <span id="btnCountBadge" style="background: rgba(255,255,255,0.25); padding: 2px 8px; border-radius: 999px; font-size: 13px;">0</span>
-                    <span>→</span>
-                </button>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">👥</div>
+                <div class="empty-title">No Students Registered</div>
+                <div class="empty-desc">No student roster found for {{ stream }} - {{ semester }}.</div>
+                <a href="/add_student" class="btn-pill btn-pill-primary"
+                    style="display: inline-block; margin-top: 16px; padding: 10px 18px;">+ Add Student</a>
+            </div>
+            {% endif %}
+
+            <!-- Persistent Bottom Action Dock -->
+            {% if students %}
+            <div class="bottom-dock">
+                <div class="dock-inner">
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <span>Submit Attendance</span>
+                        <span id="btnCountBadge"
+                            style="background: rgba(255,255,255,0.25); padding: 2px 8px; border-radius: 999px; font-size: 13px;">0</span>
+                        <span>→</span>
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Mobile Quick Menu Bottom Sheet -->
+    <div class="menu-backdrop" id="menuBackdrop" onclick="toggleMenu()">
+        <div class="menu-sheet" onclick="event.stopPropagation()">
+            <div class="sheet-handle"></div>
+            <div class="sheet-title">Quick Actions</div>
+            <div class="menu-grid">
+                <a href="/view" class="menu-item">
+                    <span class="icon">📋</span>
+                    <span>Past History</span>
+                </a>
+                <a href="/lab" class="menu-item">
+                    <span class="icon">🧪</span>
+                    <span>Lab Portal</span>
+                </a>
+                <a href="/add_student" class="menu-item">
+                    <span class="icon">👤</span>
+                    <span>Add Student</span>
+                </a>
+                <a href="/" class="menu-item">
+                    <span class="icon">🔄</span>
+                    <span>Change Class</span>
+                </a>
             </div>
         </div>
-        {% endif %}
-    </form>
-</div>
-
-<!-- Mobile Quick Menu Bottom Sheet -->
-<div class="menu-backdrop" id="menuBackdrop" onclick="toggleMenu()">
-    <div class="menu-sheet" onclick="event.stopPropagation()">
-        <div class="sheet-handle"></div>
-        <div class="sheet-title">Quick Actions</div>
-        <div class="menu-grid">
-            <a href="/view" class="menu-item">
-                <span class="icon">📋</span>
-                <span>Past History</span>
-            </a>
-            <a href="/lab" class="menu-item">
-                <span class="icon">🧪</span>
-                <span>Lab Portal</span>
-            </a>
-            <a href="/add_student" class="menu-item">
-                <span class="icon">👤</span>
-                <span>Add Student</span>
-            </a>
-            <a href="/" class="menu-item">
-                <span class="icon">🔄</span>
-                <span>Change Class</span>
-            </a>
+        <div style="text-align: center; font-size: 12px; color: #64748b; margin-top: 30px; padding-bottom: 20px;">
+            BIET Suri • Attendance Management System<br>
+            <span style="margin-top: 5px; display: inline-block;">
+                Contact: <a href="mailto:akashadhikary654@gmail.com"
+                    style="color: #2563eb; text-decoration: none; font-weight: 600;">akashadhikary654@gmail.com</a>
+            </span>
         </div>
     </div>
-</div>
 
-<script>
-    // Toggle Card Tap Handler
-    function toggleStudent(studentId) {
-        const checkbox = document.getElementById('checkbox_' + studentId);
-        if (checkbox) {
-            checkbox.checked = !checkbox.checked;
-            updateCardUI(studentId);
-            updateTotalCount();
-        }
-    }
-
-    // Update Single Card Visuals
-    function updateCardUI(studentId) {
-        const checkbox = document.getElementById('checkbox_' + studentId);
-        const card = document.getElementById('card_' + studentId);
-        if (checkbox && card) {
-            if (checkbox.checked) {
-                card.classList.add('checked');
-            } else {
-                card.classList.remove('checked');
+    <script>
+        // Toggle Card Tap Handler
+        function toggleStudent(studentId) {
+            const checkbox = document.getElementById('checkbox_' + studentId);
+            if (checkbox) {
+                checkbox.checked = !checkbox.checked;
+                updateCardUI(studentId);
+                updateTotalCount();
             }
         }
-    }
 
-    // Toggle All (Select All / Clear)
-    function toggleAll(shouldCheck) {
-        const cards = document.querySelectorAll('.student-card');
-        cards.forEach(card => {
-            // If filtered by search, only modify visible cards
-            if (card.style.display !== 'none') {
-                const checkbox = card.querySelector('.hidden-checkbox');
-                if (checkbox) {
-                    checkbox.checked = shouldCheck;
-                    if (shouldCheck) {
-                        card.classList.add('checked');
-                    } else {
-                        card.classList.remove('checked');
-                    }
+        // Update Single Card Visuals
+        function updateCardUI(studentId) {
+            const checkbox = document.getElementById('checkbox_' + studentId);
+            const card = document.getElementById('card_' + studentId);
+            if (checkbox && card) {
+                if (checkbox.checked) {
+                    card.classList.add('checked');
+                } else {
+                    card.classList.remove('checked');
                 }
             }
-        });
-        updateTotalCount();
-    }
+        }
 
-    // Update Live Count Pill and Submit Button Badge
-    function updateTotalCount() {
-        const allCheckboxes = document.querySelectorAll('.hidden-checkbox');
-        let presentCount = 0;
-        allCheckboxes.forEach(cb => {
-            if (cb.checked) presentCount++;
-        });
+        // Toggle All (Select All / Clear)
+        function toggleAll(shouldCheck) {
+            const cards = document.querySelectorAll('.student-card');
+            cards.forEach(card => {
+                // If filtered by search, only modify visible cards
+                if (card.style.display !== 'none') {
+                    const checkbox = card.querySelector('.hidden-checkbox');
+                    if (checkbox) {
+                        checkbox.checked = shouldCheck;
+                        if (shouldCheck) {
+                            card.classList.add('checked');
+                        } else {
+                            card.classList.remove('checked');
+                        }
+                    }
+                }
+            });
+            updateTotalCount();
+        }
 
-        const countDisplay = document.getElementById('presentCountDisplay');
-        const btnBadge = document.getElementById('btnCountBadge');
-        if (countDisplay) countDisplay.textContent = presentCount;
-        if (btnBadge) btnBadge.textContent = `${presentCount} Present`;
-    }
+        // Update Live Count Pill and Submit Button Badge
+        function updateTotalCount() {
+            const allCheckboxes = document.querySelectorAll('.hidden-checkbox');
+            let presentCount = 0;
+            allCheckboxes.forEach(cb => {
+                if (cb.checked) presentCount++;
+            });
 
-    // Instant Filter/Search by Roll or Name
-    function filterStudents() {
-        const query = document.getElementById('studentSearch').value.trim().toLowerCase();
-        const cards = document.querySelectorAll('.student-card');
-        let visibleCount = 0;
+            const countDisplay = document.getElementById('presentCountDisplay');
+            const btnBadge = document.getElementById('btnCountBadge');
+            if (countDisplay) countDisplay.textContent = presentCount;
+            if (btnBadge) btnBadge.textContent = `${presentCount} Present`;
+        }
 
-        cards.forEach(card => {
-            const data = card.getAttribute('data-search') || '';
-            if (!query || data.includes(query)) {
-                card.style.display = 'flex';
-                visibleCount++;
-            } else {
-                card.style.display = 'none';
+        // Instant Filter/Search by Roll or Name
+        function filterStudents() {
+            const query = document.getElementById('studentSearch').value.trim().toLowerCase();
+            const cards = document.querySelectorAll('.student-card');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const data = card.getAttribute('data-search') || '';
+                if (!query || data.includes(query)) {
+                    card.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            const emptyState = document.getElementById('noResultsState');
+            if (emptyState) {
+                emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+            }
+        }
+
+        // Validate Subject selection before submit
+        function validateSubject() {
+            const select = document.getElementById('subjectSelect');
+            return select.value !== "";
+        }
+
+        document.getElementById('attendanceForm')?.addEventListener('submit', function (e) {
+            const subject = document.getElementById('subjectSelect');
+            if (!subject || !subject.value) {
+                e.preventDefault();
+                alert("⚠️ Please select a subject before submitting.");
+                subject.focus();
+                return false;
+            }
+
+            const presentCount = document.querySelectorAll('.hidden-checkbox:checked').length;
+            if (!confirm(`Submit attendance for ${subject.value} with ${presentCount} student(s) marked Present?`)) {
+                e.preventDefault();
+                return false;
             }
         });
 
-        const emptyState = document.getElementById('noResultsState');
-        if (emptyState) {
-            emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
-        }
-    }
-
-    // Validate Subject selection before submit
-    function validateSubject() {
-        const select = document.getElementById('subjectSelect');
-        return select.value !== "";
-    }
-
-    document.getElementById('attendanceForm')?.addEventListener('submit', function(e) {
-        const subject = document.getElementById('subjectSelect');
-        if (!subject || !subject.value) {
-            e.preventDefault();
-            alert("⚠️ Please select a subject before submitting.");
-            subject.focus();
-            return false;
+        // Mobile Bottom Sheet Menu
+        function toggleMenu() {
+            const backdrop = document.getElementById('menuBackdrop');
+            backdrop.classList.toggle('open');
         }
 
-        const presentCount = document.querySelectorAll('.hidden-checkbox:checked').length;
-        if (!confirm(`Submit attendance for ${subject.value} with ${presentCount} student(s) marked Present?`)) {
-            e.preventDefault();
-            return false;
-        }
-    });
-
-    // Mobile Bottom Sheet Menu
-    function toggleMenu() {
-        const backdrop = document.getElementById('menuBackdrop');
-        backdrop.classList.toggle('open');
-    }
-
-    // Init count on load
-    updateTotalCount();
-</script>
+        // Init count on load
+        updateTotalCount();
+    </script>
 
 </body>
+
 </html>

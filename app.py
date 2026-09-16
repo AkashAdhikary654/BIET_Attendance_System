@@ -29,11 +29,12 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
 db = SQLAlchemy(app)
 
 # --- WHATSAPP GROUP LINKS ---
+# --- WHATSAPP GROUP LINKS ---
 SUBJECT_GROUPS = {
     "Operating System": "https://chat.whatsapp.com/GlkuWa1NF5EAmaRiJXknxJ",
     "Software Engineering": "https://chat.whatsapp.com/EiXy94poebVHMEm8mJ2eXS",
     "OOP": "https://chat.whatsapp.com/BDbvoBvSpCF0A9NpdbdOpU",
-    "Artificial Intelligence": "https://chat.whatsapp.com/GKla8rGTWuA7qsnhK9lTVh",
+    "AI": "https://chat.whatsapp.com/GKla8rGTWuA7qsnhK9lTVh",  # FIXED HERE
     "Compiler Design": "https://chat.whatsapp.com/CJjap6DGwLs6Nf1a05ECA8",
     "Industrial Management": "https://chat.whatsapp.com/L5FAw8gqyUNGfJCxxef2zT?s=sh&p=a&mlu=0&ilr=4",
     "Operating System Lab": "https://chat.whatsapp.com/BDmV2RpP7mg8n5SrVqjxVZ?s=cl&p=a&mlu=4&ilr=4",

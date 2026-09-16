@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#1e293b">
     <title>Lab Attendance Portal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --primary: #2563eb;
@@ -326,168 +330,207 @@
         }
     </style>
 </head>
+
 <body>
 
-<header class="app-header">
-    <a href="/attendance" class="header-back">
-        <span>←</span>
-        <span>Theory</span>
-    </a>
-    <div class="header-title">Lab Attendance</div>
-    <div class="header-spacer"></div>
-</header>
+    <header class="app-header">
+        <a href="/attendance" class="header-back">
+            <span>←</span>
+            <span>Theory</span>
+        </a>
+        <div class="header-title">Lab Attendance</div>
+        <div class="header-spacer"></div>
+    </header>
 
-<div class="container">
+    <div class="container">
 
-    <!-- Submit Lab Attendance Card -->
-    <div class="card">
-        <div class="card-header">
-            <span class="card-title">✅ Submit Lab Entry</span>
-            <span class="badge-lite">Manual Mode</span>
-        </div>
+        <!-- Submit Lab Attendance Card -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">✅ Submit Lab Entry</span>
+                <span class="badge-lite">Manual Mode</span>
+            </div>
 
-        <div class="form-item">
-            <label for="attendance_student_id">Select Student</label>
-            <select id="attendance_student_id" class="custom-select">
-                <option value="" disabled selected>Tap to select student name...</option>
-                {% for student in students %}
+            <div class="form-item">
+                <label for="attendance_student_id">Select Student</label>
+                <select id="attendance_student_id" class="custom-select">
+                    <option value="" disabled selected>Tap to select student name...</option>
+                    {% for student in students %}
                     <option value="{{ student.id }}">{{ student.class_roll }} - {{ student.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="form-item">
-            <label for="subject">Select Lab Subject</label>
-            <select id="subject" class="custom-select">
-                <option value="" disabled selected>Tap to select lab session...</option>
-                <option value="Operating System Lab">Operating System Lab</option>
-                <option value="OOP Lab">OOP Lab</option>
-                <option value="Software Engineering Lab">Software Engineering Lab</option>
-            </select>
-        </div>
-
-        <button type="button" onclick="submitLiteAttendance()" class="btn-submit-lab">
-            <span>Mark Lab Present</span>
-            <span>✓</span>
-        </button>
-    </div>
-
-    <!-- Lab History & WhatsApp Card -->
-    <div class="card">
-        <div class="card-header">
-            <span class="card-title">📅 Today's Lab Log</span>
-            <span class="badge-lite">{{ records|length }} Present</span>
-        </div>
-
-        <form action="/lab" method="GET">
-            <div class="filter-row">
-                <input type="date" name="filter_date" id="filter_date" value="{{ filter_date or '' }}">
-                <select name="filter_subject" id="filter_subject">
-                    <option value="">All Lab Sessions</option>
-                    <option value="Operating System Lab" {% if filter_subject == 'Operating System Lab' %}selected{% endif %}>Operating System Lab</option>
-                    <option value="OOP Lab" {% if filter_subject == 'OOP Lab' %}selected{% endif %}>OOP Lab</option>
-                    <option value="Software Engineering Lab" {% if filter_subject == 'Software Engineering Lab' %}selected{% endif %}>Software Engineering Lab</option>
+                    {% endfor %}
                 </select>
             </div>
-            <div class="filter-actions">
-                <button type="submit" class="btn-filter">Search Log</button>
-                <a href="/lab" class="btn-reset">Reset</a>
-            </div>
-        </form>
 
-        <button type="button" onclick="sendWhatsAppReport()" class="btn-wa-report">
-            <span>💬 Send Lab Report to WhatsApp</span>
-        </button>
+            <div class="form-item">
+                <label for="subject">Select Lab Subject</label>
+                <select id="subject" class="custom-select">
+                    <option value="" disabled selected>Tap to select lab session...</option>
+                    <option value="Operating System Lab">Operating System Lab</option>
+                    <option value="OOP Lab">OOP Lab</option>
+                    <option value="Software Engineering Lab">Software Engineering Lab</option>
+                </select>
+            </div>
 
-        <div class="log-stream">
-            {% for att, student in records %}
-            <div class="log-item">
-                <div class="log-info">
-                    <div class="log-name">{{ student.name }}</div>
-                    <div class="log-meta">
-                        <span class="log-roll">{{ student.class_roll }}</span>
-                        <span>{{ att.subject }}</span>
-                    </div>
-                </div>
-                <span class="status-pill">✓ Present</span>
-            </div>
-            {% else %}
-            <div class="empty-log">
-                No lab attendance marked for this session yet.
-            </div>
-            {% endfor %}
+            <button type="button" onclick="submitLiteAttendance()" class="btn-submit-lab">
+                <span>Mark Lab Present</span>
+                <span>✓</span>
+            </button>
         </div>
+
+        <!-- Lab History & WhatsApp Card -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">📅 Today's Lab Log</span>
+                <span class="badge-lite">{{ records|length }} Present</span>
+            </div>
+
+            <form action="/lab" method="GET">
+                <div class="filter-row">
+                    <input type="date" name="filter_date" id="filter_date" value="{{ filter_date or '' }}">
+                    <select name="filter_subject" id="filter_subject">
+                        <option value="">All Lab Sessions</option>
+                        <option value="Operating System Lab" {% if filter_subject=='Operating System Lab' %}selected{%
+                            endif %}>Operating System Lab</option>
+                        <option value="OOP Lab" {% if filter_subject=='OOP Lab' %}selected{% endif %}>OOP Lab</option>
+                        <option value="Software Engineering Lab" {% if filter_subject=='Software Engineering Lab'
+                            %}selected{% endif %}>Software Engineering Lab</option>
+                    </select>
+                </div>
+                <div class="filter-actions">
+                    <button type="submit" class="btn-filter">Search Log</button>
+                    <a href="/lab" class="btn-reset">Reset</a>
+                </div>
+            </form>
+
+            <button type="button" onclick="sendWhatsAppReport()" class="btn-wa-report">
+                <span>💬 Send Lab Report to WhatsApp</span>
+            </button>
+
+            <div class="log-stream">
+                {% for att, student in records %}
+                <div class="log-item">
+                    <div class="log-info">
+                        <div class="log-name">{{ student.name }}</div>
+                        <div class="log-meta">
+                            <span class="log-roll">{{ student.class_roll }}</span>
+                            <span>{{ att.subject }}</span>
+                        </div>
+                    </div>
+                    <span class="status-pill">✓ Present</span>
+                </div>
+                {% else %}
+                <div class="empty-log">
+                    No lab attendance marked for this session yet.
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div style="text-align: center; font-size: 12px; color: #64748b; margin-top: 30px; padding-bottom: 20px;">
+            BIET Suri • Attendance Management System<br>
+            <span style="margin-top: 5px; display: inline-block;">
+                Contact: <a href="mailto:akashadhikary654@gmail.com"
+                    style="color: #2563eb; text-decoration: none; font-weight: 600;">akashadhikary654@gmail.com</a>
+            </span>
+        </div>
+
     </div>
 
-</div>
+    <script>
+        function submitLiteAttendance() {
+            const studentId = document.getElementById('attendance_student_id').value;
+            const subject = document.getElementById('subject').value;
 
-<script>
-    function submitLiteAttendance() {
-        const studentId = document.getElementById('attendance_student_id').value;
-        const subject = document.getElementById('subject').value;
+            if (!studentId) {
+                return alert("⚠️ Please select a student name from the dropdown.");
+            }
+            if (!subject) {
+                return alert("⚠️ Please select a lab subject.");
+            }
 
-        if (!studentId) {
-            return alert("⚠️ Please select a student name from the dropdown.");
+            const btn = document.querySelector('.btn-submit-lab');
+            const origText = btn.innerHTML;
+            btn.innerHTML = "<span>Submitting...</span>";
+            btn.disabled = true;
+
+            fetch('/lab_attendance', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `student_id=${studentId}&subject=${encodeURIComponent(subject)}`
+            })
+                .then(res => res.text())
+                .then(data => {
+                    alert(data);
+                    window.location.reload();
+                })
+                .catch(err => {
+                    alert("Network error. Please try again.");
+                    btn.innerHTML = origText;
+                    btn.disabled = false;
+                });
         }
-        if (!subject) {
-            return alert("⚠️ Please select a lab subject.");
-        }
 
-        const btn = document.querySelector('.btn-submit-lab');
-        const origText = btn.innerHTML;
-        btn.innerHTML = "<span>Submitting...</span>";
-        btn.disabled = true;
+        function sendWhatsAppReport() {
+            const subjectStr = document.getElementById('filter_subject').value;
+            const dateInput = document.getElementById('filter_date').value;
 
-        fetch('/lab_attendance', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `student_id=${studentId}&subject=${encodeURIComponent(subject)}`
-        })
-        .then(res => res.text())
-        .then(data => {
-            alert(data);
-            window.location.reload(); 
-        })
-        .catch(err => {
-            alert("Network error. Please try again.");
-            btn.innerHTML = origText;
-            btn.disabled = false;
-        });
-    }
-
-    async function sendWhatsAppReport() {
-        const date = document.getElementById('filter_date').value;
-        const subject = document.getElementById('filter_subject').value;
-        
-        if (!subject) {
-            alert("⚠️ Please select a specific Lab Session from the dropdown before generating the WhatsApp report.");
-            return;
-        }
-        
-        const btn = document.querySelector('.btn-wa-report');
-        const origText = btn.innerHTML;
-        btn.innerHTML = "<span>⏳ Generating report...</span>";
-        
-        try {
-            const response = await fetch(`/send_lab_report?date=${date}&subject=${encodeURIComponent(subject)}`);
-            const data = await response.json();
-            
-            if (data.error) {
-                alert(data.error);
-                btn.innerHTML = origText;
+            if (!subjectStr) {
+                alert("⚠️ Please select a specific Lab Session from the filter dropdown first.");
                 return;
             }
-            
-            // Open WhatsApp app directly with report pre-filled (instant on mobile)
-            window.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(data.message)}`;
-            
-        } catch (err) {
-            alert("Error generating report. Please check your connection.");
+
+            const btn = document.querySelector('.btn-wa-report');
+            btn.innerHTML = "<span>⏳ Processing...</span>";
+
+            // 1. Group Links Dictionary
+            const groupLinks = {
+                "Operating System Lab": "https://chat.whatsapp.com/BDmV2RpP7mg8n5SrVqjxVZ?s=cl&p=a&mlu=4&ilr=4",
+                "OOP Lab": "https://chat.whatsapp.com/BDbvoBvSpCF0A9NpdbdOpU",
+                "Software Engineering Lab": "https://chat.whatsapp.com/EiXy94poebVHMEm8mJ2eXS"
+            };
+            const link = groupLinks[subjectStr] || "https://web.whatsapp.com";
+
+            // 2. Format the Date locally
+            const d = dateInput ? new Date(dateInput) : new Date();
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const formattedDate = `${String(d.getDate()).padStart(2, '0')}-${months[d.getMonth()]}-${d.getFullYear()}`;
+
+            // 3. Build message instantly from the screen (No server fetch!)
+            let reportText = `*Date:* ${formattedDate}\n*Subject:* ${subjectStr}\n\n*Present Students:*\n`;
+            const logs = document.querySelectorAll('.log-item');
+            let count = 1;
+
+            logs.forEach(log => {
+                const status = log.querySelector('.status-pill');
+                if (status && status.innerText.includes("Present")) {
+                    const name = log.querySelector('.log-name').innerText.trim();
+                    const roll = log.querySelector('.log-roll').innerText.trim();
+                    reportText += `${count}) ${roll}--> ${name}\n`;
+                    count++;
+                }
+            });
+
+            if (count === 1) {
+                reportText += "No students marked present.\n";
+            }
+
+            // 4. Synchronous Copy (Cannot be blocked)
+            const textArea = document.createElement("textarea");
+            textArea.value = reportText;
+            textArea.style.position = "absolute";
+            textArea.style.left = "-9999px"; // Hides securely off-screen
+            document.body.appendChild(textArea);
+            textArea.select();
+            try { document.execCommand('copy'); } catch (e) { }
+            document.body.removeChild(textArea);
+
+            // 5. Instant Redirect
+            btn.innerHTML = "<span>✅ Opening WhatsApp Group...</span>";
+            window.location.replace(link);
         }
-        
-        btn.innerHTML = origText;
-    }
-</script>
+    </script>
 
 </body>
+
 </html>
