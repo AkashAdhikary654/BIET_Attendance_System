@@ -12,6 +12,10 @@ from datetime import date, datetime
 app = Flask(__name__)
 app.secret_key = 'super_secret_key_change_this_later' 
 
+# --- NEW CLOUD SESSION FIX ---
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_NAME'] = 'attendance_session'
+
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'attendance.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
