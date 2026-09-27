@@ -1,21 +1,13 @@
 import os
 import sys
 
-# Collect all potential ports to listen on
-env_port = os.environ.get("PORT")
-candidate_ports = [env_port, "3000", "5000", "8080", "80"]
-ports = []
-for p in candidate_ports:
-    if p and p not in ports:
-        ports.append(str(p))
-
-bind_args = []
-for p in ports:
-    bind_args.extend(["-b", f"0.0.0.0:{p}"])
+# Use the PORT environment variable provided by the hosting platform.
+# Lonch.cloud (and most cloud platforms) inject this to tell the app which port to listen on.
+port = os.environ.get("PORT", "3000")
 
 cmd = [
     "gunicorn",
-    *bind_args,
+    "-b", f"0.0.0.0:{port}",
     "--workers", "1",
     "--threads", "4",
     "--timeout", "120",
@@ -24,7 +16,7 @@ cmd = [
     "app:app"
 ]
 
-print(f"[STARTUP] Launching Gunicorn listening on ports: {', '.join(ports)}", flush=True)
+print(f"[STARTUP] Launching Gunicorn on port {port}", flush=True)
 sys.stdout.flush()
 sys.stderr.flush()
 
@@ -32,7 +24,6 @@ try:
     os.execvp("gunicorn", cmd)
 except Exception as e:
     print(f"[STARTUP ERROR] Failed to exec gunicorn: {e}", file=sys.stderr, flush=True)
-    # Fallback to python app.py if gunicorn fails for any reason
+    # Fallback to Flask dev server if gunicorn fails
     from app import app
-    port = int(env_port) if env_port else 3000
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(host="0.0.0.0", port=int(port), debug=False)

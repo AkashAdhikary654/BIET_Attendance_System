@@ -14,8 +14,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application files
 COPY . .
 
-# Expose all candidate ports so ECS / ALB port mapping matches any configured port
-EXPOSE 3000 5000 8080 80
+# Expose the port the app will listen on
+EXPOSE 3000
 
-# Launch through entrypoint.py to bind to all candidate ports simultaneously
-CMD ["python", "entrypoint.py"]
+# Launch through entrypoint.py which binds to the PORT env var
+CMD ["python", "entrypoint.py"]
