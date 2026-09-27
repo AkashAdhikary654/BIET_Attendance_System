@@ -20,6 +20,18 @@ app.secret_key = 'super_secret_key_change_this_later'
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_NAME'] = 'attendance_session'
 
+# --- DISABLE TEMPLATE CACHING (fixes stale UI after deploy) ---
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.jinja_env.auto_reload = True
+# Prevent browser from caching HTML responses
+@app.after_request
+def add_no_cache_headers(response):
+    if 'text/html' in response.content_type:
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+    return response
+
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'attendance.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
